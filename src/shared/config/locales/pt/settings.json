@@ -1,0 +1,36 @@
+{
+  "settingsTitle": "Configurações",
+  "callTitle": "Configurações de Chamada",
+  "general": {
+    "title": "Configurações Gerais",
+    "color": {
+      "title": "Configurações de Cor",
+      "default": "Padrão",
+      "blue": "Azul",
+      "gray": "Cinza",
+      "green": "Verde",
+      "orange": "Laranja",
+      "purple": "Roxo",
+      "red": "Vermelho",
+      "teal": "Verde-azulado",
+      "yellow": "Amarelo"
+    },
+    "languageTitle": "Configurações de Idioma",
+    "light": {
+      "title": "Configurações de Luz",
+      "backlightLevel": "Nível de luz de fundo",
+      "inactiveAfter": "Inativo após"
+    },
+    "sound": {
+      "title": "Configurações de Som",
+      "notification": "Notificação",
+      "alarm": "Alarme",
+      "ring": "Toque"
+    }
+  },
+  "securityTitle": "Configurações de Segurança",
+  "restore": {
+    "title": "Restaurar Configurações",
+    "restoreFactorySettings": "Restaurar configurações de fábrica?"
+  }
+}

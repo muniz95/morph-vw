@@ -53,11 +53,11 @@ const swipeLeft = (element: Element) => {
 };
 
 const pressBack = () => {
-  fireEvent.click(screen.getByText('<'));
+  fireEvent.click(screen.getByRole('button', { name: 'Upper Right' }));
 };
 
 const pressHome = () => {
-  fireEvent.click(screen.getByText('O'));
+  fireEvent.click(screen.getByRole('button', { name: 'Lower Right' }));
 };
 
 const advancePastStartup = () => {

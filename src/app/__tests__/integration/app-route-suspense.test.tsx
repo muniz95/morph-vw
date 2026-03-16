@@ -50,6 +50,8 @@ describe('App route suspense', () => {
     });
 
     expect(screen.getByText('Loading...')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Upper Right' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Lower Right' })).toBeTruthy();
 
     await act(async () => {
       await vi.advanceTimersByTimeAsync(150);

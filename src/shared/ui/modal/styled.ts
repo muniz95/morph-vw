@@ -11,12 +11,14 @@ const ModalContainer = styled.div<{
   color: string;
   backlightLevel: number;
 }>`
-  position: fixed;
-  z-index: 1;
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  inset: 0;
+  z-index: 3;
   vertical-align: middle;
   text-align: center;
+  box-sizing: border-box;
+  padding: 24px;
+  border-radius: inherit;
   background-color: ${({ color }) => color};
   background-image: ${({ backlightLevel }) =>
     `linear-gradient(rgb(0 0 0 / ${100 - backlightLevel}%) 0 0)`};

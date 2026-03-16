@@ -10,6 +10,7 @@ import RouteLoading from '@/shared/ui/route-loading';
 import Startup from '@/shared/ui/startup';
 import GlobalStyle from '@/shared/styles/global-style';
 import S from '@/app/ui/app-shell';
+import PhoneShell from '@/app/ui/phone-shell';
 import RouteErrorBoundary from '@/app/ui/route-error-boundary';
 import { useApp } from '@/app/hooks/use-app';
 
@@ -26,43 +27,54 @@ const App = () => {
   } = useApp();
 
   return (
-    <S.AppShell backgroundColor={color} backlightLevel={backlightLevel}>
+    <PhoneShell.Container>
       <GlobalStyle />
-      {firstRender ? (
-        <Startup color={color} />
-      ) : (
-        <>
-          <SignalStatus />
-          <S.AppMainContainer>
-            <TopBar
-              pageIndicator={
-                <PageIndicator
-                  firstLevel={indicatorLevels.firstLevel}
-                  secondLevel={indicatorLevels.secondLevel}
-                  thirdLevel={indicatorLevels.thirdLevel}
-                  fourthLevel={indicatorLevels.fourthLevel}
-                  fifthLevel={indicatorLevels.fifthLevel}
+      <PhoneShell.UpperContainer data-testid="phone-shell-upper" />
+      <PhoneShell.ScreenContainer data-testid="phone-shell-screen">
+        <S.AppShell
+          backgroundColor={color}
+          backlightLevel={backlightLevel}
+          data-testid="phone-screen-surface"
+        >
+          {firstRender ? (
+            <Startup color={color} />
+          ) : (
+            <>
+              <SignalStatus />
+              <S.AppMainContainer>
+                <TopBar
+                  pageIndicator={
+                    <PageIndicator
+                      firstLevel={indicatorLevels.firstLevel}
+                      secondLevel={indicatorLevels.secondLevel}
+                      thirdLevel={indicatorLevels.thirdLevel}
+                      fourthLevel={indicatorLevels.fourthLevel}
+                      fifthLevel={indicatorLevels.fifthLevel}
+                    />
+                  }
                 />
-              }
-            />
-            <PwaBanner />
-            <S.AppPageContainer>
-              <RouteErrorBoundary resetKey={routePath}>
-                <Suspense fallback={<RouteLoading />}>{routing}</Suspense>
-              </RouteErrorBoundary>
-            </S.AppPageContainer>
-            <BottomBar />
-          </S.AppMainContainer>
-          <BatteryStatus />
+                <PwaBanner />
+                <S.AppPageContainer>
+                  <RouteErrorBoundary resetKey={routePath}>
+                    <Suspense fallback={<RouteLoading />}>{routing}</Suspense>
+                  </RouteErrorBoundary>
+                </S.AppPageContainer>
+              </S.AppMainContainer>
+              <BatteryStatus />
+            </>
+          )}
           <Modal
             color={color}
             backlightLevel={backlightLevel}
             isOpen={showModal}
             onAutoClose={handleModalAutoClose}
           />
-        </>
-      )}
-    </S.AppShell>
+        </S.AppShell>
+      </PhoneShell.ScreenContainer>
+      <PhoneShell.KeyboardContainer data-testid="phone-shell-keyboard">
+        <BottomBar />
+      </PhoneShell.KeyboardContainer>
+    </PhoneShell.Container>
   );
 };
 

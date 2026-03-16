@@ -58,7 +58,7 @@ describe('App route error boundary integration', () => {
     expect(screen.getByRole('alert').textContent).toBe(
       'Unexpected route error.'
     );
-    expect(screen.getByText('<')).toBeTruthy();
-    expect(screen.getByText('O')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Upper Right' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Lower Right' })).toBeTruthy();
   });
 });

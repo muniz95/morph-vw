@@ -41,7 +41,7 @@ export const useCircularMenuController = ({
     setLevel(position);
   }, [position, setLevel]);
 
-  const onTap = useCallback(() => {
+  const onConfirm = useCallback(() => {
     const selected = menuItems[position];
     if (!selected) return;
     goTo(selected.path);
@@ -62,14 +62,14 @@ export const useCircularMenuController = ({
   useHardwareInputRegistration({
     onLeft,
     onRight,
-    onConfirm: onTap,
+    onConfirm,
   });
 
   const currentLabel = menuItems[position]?.title ?? '';
 
   return {
     currentLabel,
-    onConfirm: onTap,
+    onConfirm,
     onLeft,
     onRight,
   };

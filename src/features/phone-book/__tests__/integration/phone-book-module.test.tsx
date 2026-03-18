@@ -1,21 +1,25 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { fireEvent, render } from '@testing-library/react';
-import { MemoryRouter, Route, Routes, useNavigate } from 'react-router-dom';
+import { act, render } from '@testing-library/react';
 import '@/app/providers/i18n';
+import {
+  resetHardwareInputStore,
+  useHardwareInputStore,
+} from '@/app/state/hardware-input-store';
+import {
+  resetPhoneNavigationStore,
+  usePhoneNavigationStore,
+} from '@/app/state/phone-navigation-store';
 import { phoneBookModule } from '@/features/phone-book/module';
 import PhoneBookPage from '@/features/phone-book/ui/pages/phone-book-page';
 import { resetUiStore, useUiStore } from '@/app/state/ui-store';
 import { resetContactsStore } from '@/features/phone-book/state/contacts-store';
 
-const BackPage = () => {
-  const navigate = useNavigate();
-  return <button onClick={() => navigate(-1)}>BACK</button>;
-};
-
 describe('phone-book module integration', () => {
   beforeEach(() => {
     resetUiStore();
     resetContactsStore();
+    resetPhoneNavigationStore();
+    resetHardwareInputStore();
   });
 
   it('exposes all expected routes', () => {
@@ -33,62 +37,47 @@ describe('phone-book module integration', () => {
     ]);
   });
 
-  it('navigates from phone-book menu on tap', () => {
-    const { getByText } = render(
-      <MemoryRouter initialEntries={['/phonebook']}>
-        <Routes>
-          <Route path="/phonebook" element={<PhoneBookPage />} />
-          <Route path="/phonebook/search" element={<div>SEARCH</div>} />
-        </Routes>
-      </MemoryRouter>
-    );
-
-    const label = getByText(/Search|searchTitle/i);
-    fireEvent.touchStart(label, {
-      targetTouches: [{ clientX: 10, clientY: 10 }],
+  it('pushes the selected phone-book route on hardware confirm', () => {
+    usePhoneNavigationStore.setState({
+      stack: ['/', '/menu', '/phonebook'],
     });
-    fireEvent.touchEnd(label);
 
-    expect(getByText('SEARCH')).toBeTruthy();
+    render(<PhoneBookPage />);
+
+    act(() => {
+      useHardwareInputStore.getState().triggerConfirm();
+    });
+
+    expect(usePhoneNavigationStore.getState().stack).toEqual([
+      '/',
+      '/menu',
+      '/phonebook',
+      '/phonebook/search',
+    ]);
   });
 
   it('keeps second-level index when returning from a third-level page', () => {
-    const { getByText } = render(
-      <MemoryRouter initialEntries={['/phonebook']}>
-        <Routes>
-          <Route path="/phonebook" element={<PhoneBookPage />} />
-          <Route path="/phonebook/addname" element={<BackPage />} />
-        </Routes>
-      </MemoryRouter>
-    );
-
-    const searchLabel = getByText(/Search|searchTitle/i);
-    fireEvent.touchStart(searchLabel, {
-      targetTouches: [{ clientX: 120, clientY: 10 }],
+    usePhoneNavigationStore.setState({
+      stack: ['/', '/menu', '/phonebook'],
     });
-    fireEvent.touchMove(searchLabel, {
-      targetTouches: [{ clientX: 20, clientY: 10 }],
-    });
-    fireEvent.touchEnd(searchLabel);
 
-    const serviceNosLabel = getByText(/Service|servicenosTitle/i);
-    fireEvent.touchStart(serviceNosLabel, {
-      targetTouches: [{ clientX: 120, clientY: 10 }],
-    });
-    fireEvent.touchMove(serviceNosLabel, {
-      targetTouches: [{ clientX: 20, clientY: 10 }],
-    });
-    fireEvent.touchEnd(serviceNosLabel);
+    render(<PhoneBookPage />);
 
-    const addNameLabel = getByText(/Add Name|addnameTitle/i);
-    fireEvent.touchStart(addNameLabel, {
-      targetTouches: [{ clientX: 10, clientY: 10 }],
+    act(() => {
+      useHardwareInputStore.getState().triggerRight();
+      useHardwareInputStore.getState().triggerRight();
+      useHardwareInputStore.getState().triggerConfirm();
     });
-    fireEvent.touchEnd(addNameLabel);
 
-    fireEvent.click(getByText('BACK'));
+    act(() => {
+      usePhoneNavigationStore.getState().goBack();
+    });
 
-    expect(getByText(/Add Name|addnameTitle/i)).toBeTruthy();
     expect(useUiStore.getState().secondLevel).toBe(3);
+    expect(usePhoneNavigationStore.getState().stack).toEqual([
+      '/',
+      '/menu',
+      '/phonebook',
+    ]);
   });
 });

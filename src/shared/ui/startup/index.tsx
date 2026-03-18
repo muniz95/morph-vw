@@ -11,7 +11,7 @@ interface StartupProps {
 const Startup = ({ color }: StartupProps) => {
   const { matrix } = useStartup();
   return (
-    <S.StartupContainer color={color}>
+    <S.StartupContainer color={color} data-testid="startup-overlay">
       <DotMatrix
         dotGap={0}
         dotSize={2}

@@ -1,12 +1,108 @@
 import S from './styled';
 import { useBottomBarNavigation } from './hooks/use-bottom-bar-navigation';
 
+const numericKeys = [
+  '1',
+  '2',
+  '3',
+  '4',
+  '5',
+  '6',
+  '7',
+  '8',
+  '9',
+  '*',
+  '0',
+  '#',
+];
+
 const BottomBar = () => {
-  const { goBack, goHome } = useBottomBarNavigation();
+  const {
+    canConfirm,
+    canGoBack,
+    canGoHome,
+    canMoveLeft,
+    canMoveRight,
+    confirm,
+    goBack,
+    goHome,
+    moveLeft,
+    moveRight,
+    openMenu,
+  } = useBottomBarNavigation();
+
   return (
-    <S.BottomBarContainer>
-      <div onClick={() => goHome()}>O</div>
-      <div onClick={() => goBack()}>&lt;</div>
+    <S.BottomBarContainer role="group" aria-label="Phone keyboard">
+      <S.HardwareDeck>
+        <S.SideColumn>
+          <S.ActionKey type="button" aria-label="Menu" onClick={openMenu}>
+            Menu
+          </S.ActionKey>
+          <S.ActionKey type="button" $backgroundColor="#00ff00" disabled />
+        </S.SideColumn>
+        <S.NavigationPad>
+          <S.NavKey type="button" disabled $area="up">
+            ^
+          </S.NavKey>
+          <S.NavKey
+            type="button"
+            aria-label="Left"
+            disabled={!canMoveLeft}
+            $area="left"
+            onClick={moveLeft}
+          >
+            {'<'}
+          </S.NavKey>
+          <S.NavKey
+            type="button"
+            aria-label="OK"
+            disabled={!canConfirm}
+            $area="center"
+            $isCenter
+            onClick={confirm}
+          >
+            OK
+          </S.NavKey>
+          <S.NavKey
+            type="button"
+            aria-label="Right"
+            disabled={!canMoveRight}
+            $area="right"
+            onClick={moveRight}
+          >
+            {'>'}
+          </S.NavKey>
+          <S.NavKey type="button" disabled $area="down">
+            v
+          </S.NavKey>
+        </S.NavigationPad>
+        <S.SideColumn>
+          <S.ActionKey
+            type="button"
+            aria-label="Upper Right"
+            disabled={!canGoBack}
+            onClick={goBack}
+          >
+            Back
+          </S.ActionKey>
+          <S.ActionKey
+            type="button"
+            aria-label="Lower Right"
+            $backgroundColor="#ff0000"
+            disabled={!canGoHome}
+            onClick={goHome}
+          >
+            Home
+          </S.ActionKey>
+        </S.SideColumn>
+      </S.HardwareDeck>
+      <S.NumericPad aria-hidden="true">
+        {numericKeys.map((key) => (
+          <S.NumericKey type="button" key={key} disabled>
+            {key}
+          </S.NumericKey>
+        ))}
+      </S.NumericPad>
     </S.BottomBarContainer>
   );
 };

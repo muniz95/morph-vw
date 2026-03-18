@@ -27,7 +27,7 @@ describe('useInactivityBacklight', () => {
     expect(result.current).toBe(DIMMED_BACKLIGHT_LEVEL);
   });
 
-  it('restores backlight on touch input and restarts inactivity timer', () => {
+  it('restores backlight on pointer activity and restarts inactivity timer', () => {
     const { result } = renderHook(() => useInactivityBacklight(70, 2));
 
     act(() => {
@@ -37,7 +37,7 @@ describe('useInactivityBacklight', () => {
     expect(result.current).toBe(DIMMED_BACKLIGHT_LEVEL);
 
     act(() => {
-      window.dispatchEvent(new Event('touchstart'));
+      window.dispatchEvent(new Event('pointerdown'));
     });
 
     expect(result.current).toBe(70);
@@ -53,6 +53,26 @@ describe('useInactivityBacklight', () => {
     });
 
     expect(result.current).toBe(DIMMED_BACKLIGHT_LEVEL);
+  });
+
+  it('restores backlight on keyboard activity and restarts inactivity timer', () => {
+    const { result } = renderHook(() => useInactivityBacklight(75, 2));
+
+    act(() => {
+      vi.advanceTimersByTime(2000);
+    });
+
+    expect(result.current).toBe(DIMMED_BACKLIGHT_LEVEL);
+
+    act(() => {
+      window.dispatchEvent(
+        new KeyboardEvent('keydown', {
+          key: 'Enter',
+        })
+      );
+    });
+
+    expect(result.current).toBe(75);
   });
 
   it('keeps configured brightness when inactivity timer is disabled', () => {

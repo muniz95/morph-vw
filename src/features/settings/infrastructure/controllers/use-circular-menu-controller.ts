@@ -1,8 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
-import { SettingsMenuItem } from '@/features/settings/domain/types';
+import { useHardwareInputRegistration } from '@/app/hooks/use-hardware-input-registration';
+
+interface MenuItem {
+  path: string;
+  title: string;
+}
 
 interface CircularMenuControllerInput {
-  menuItems: SettingsMenuItem[];
+  menuItems: MenuItem[];
   setLevel: (position: number) => void;
   goTo: (path: string) => void;
   initialPosition?: number;
@@ -36,30 +41,36 @@ export const useCircularMenuController = ({
     setLevel(position);
   }, [position, setLevel]);
 
-  const onTap = useCallback(() => {
+  const onConfirm = useCallback(() => {
     const selected = menuItems[position];
     if (!selected) return;
     goTo(selected.path);
   }, [goTo, menuItems, position]);
 
-  const onSwipedLeft = useCallback(() => {
+  const onRight = useCallback(() => {
     setPosition((current) =>
       current === menuItems.length - 1 ? 0 : current + 1
     );
   }, [menuItems.length]);
 
-  const onSwipedRight = useCallback(() => {
+  const onLeft = useCallback(() => {
     setPosition((current) =>
       current === 0 ? menuItems.length - 1 : current - 1
     );
   }, [menuItems.length]);
 
+  useHardwareInputRegistration({
+    onLeft,
+    onRight,
+    onConfirm,
+  });
+
   const currentLabel = menuItems[position]?.title ?? '';
 
   return {
     currentLabel,
-    onTap,
-    onSwipedLeft,
-    onSwipedRight,
+    onConfirm,
+    onLeft,
+    onRight,
   };
 };

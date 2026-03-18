@@ -1,9 +1,11 @@
 import styled from 'styled-components';
 
 const StartupContainer = styled.div<{ color: string }>`
-  position: fixed;
+  position: absolute;
+  z-index: 2;
   display: flex;
   inset: 0;
+  border-radius: inherit;
   background-color: ${({ color }) => color};
   place-content: center;
   place-items: center;

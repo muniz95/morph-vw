@@ -2,17 +2,9 @@ import SwipeMenu from '@/shared/ui/swipe-menu';
 import { useGeneralSettingsMenuController } from '@/features/settings/infrastructure/controllers/use-general-settings-menu-controller';
 
 const GeneralSettingsPage = () => {
-  const { currentLabel, onTap, onSwipedLeft, onSwipedRight } =
-    useGeneralSettingsMenuController();
+  const { currentLabel } = useGeneralSettingsMenuController();
 
-  return (
-    <SwipeMenu
-      label={currentLabel}
-      onTap={onTap}
-      onSwipedLeft={onSwipedLeft}
-      onSwipedRight={onSwipedRight}
-    />
-  );
+  return <SwipeMenu label={currentLabel} />;
 };
 
 export default GeneralSettingsPage;

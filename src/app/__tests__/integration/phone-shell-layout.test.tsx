@@ -3,15 +3,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import App from '@/app/app';
 import '@/app/providers/i18n';
+import { resetHardwareInputStore } from '@/app/state/hardware-input-store';
+import { resetPhoneNavigationStore } from '@/app/state/phone-navigation-store';
 import { resetUiStore, useUiStore } from '@/app/state/ui-store';
 import {
   resetSettingsStore,
   SETTINGS_STORAGE_KEY,
 } from '@/features/settings/state/settings-store';
-
-const labels = {
-  phoneBook: /Phone Book|Agenda|phonebookTitle/i,
-};
 
 const flushLazyRoute = async () => {
   await act(async () => {
@@ -32,6 +30,8 @@ describe('phone shell layout integration', () => {
 
     resetSettingsStore();
     resetUiStore();
+    resetPhoneNavigationStore();
+    resetHardwareInputStore();
   });
 
   afterEach(() => {
@@ -41,7 +41,7 @@ describe('phone shell layout integration', () => {
 
   it('renders the phone shell rows and keeps routed content inside the screen', async () => {
     render(
-      <MemoryRouter initialEntries={['/']}>
+      <MemoryRouter>
         <App />
       </MemoryRouter>
     );
@@ -53,23 +53,23 @@ describe('phone shell layout integration', () => {
     await flushLazyRoute();
 
     const screenSurface = screen.getByTestId('phone-screen-surface');
-    const phoneBook = screen.getByText(labels.phoneBook);
 
     expect(screen.getByTestId('phone-shell-upper')).toBeTruthy();
     expect(screen.getByTestId('phone-shell-screen')).toBeTruthy();
     expect(screen.getByTestId('phone-shell-keyboard')).toBeTruthy();
-    expect(screenSurface.contains(phoneBook)).toBe(true);
+    expect(screenSurface.contains(screen.getByText(/Press Menu/i))).toBe(true);
     expect(screen.getByRole('button', { name: 'Upper Right' }).textContent).toBe(
-      '<'
+      'Back'
     );
     expect(screen.getByRole('button', { name: 'Lower Right' }).textContent).toBe(
-      'O'
+      'Home'
     );
+    expect(screen.getByRole('button', { name: 'Menu' })).toBeTruthy();
   });
 
   it('keeps startup and modal overlays inside the screen surface', async () => {
     render(
-      <MemoryRouter initialEntries={['/']}>
+      <MemoryRouter>
         <App />
       </MemoryRouter>
     );

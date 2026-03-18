@@ -1,27 +1,11 @@
-import CurrentPageContainer from '@/shared/ui/current-page-container';
+import HomeScreen from '@/shared/ui/home-screen';
 
 interface SwipeMenuProps {
   label: string;
-  onTap: () => void;
-  onSwipedLeft: () => void;
-  onSwipedRight: () => void;
 }
 
-const SwipeMenu = ({
-  label,
-  onTap,
-  onSwipedLeft,
-  onSwipedRight,
-}: SwipeMenuProps) => {
-  return (
-    <CurrentPageContainer
-      onTap={onTap}
-      onSwipedLeft={onSwipedLeft}
-      onSwipedRight={onSwipedRight}
-    >
-      {label}
-    </CurrentPageContainer>
-  );
+const SwipeMenu = ({ label }: SwipeMenuProps) => {
+  return <HomeScreen>{label}</HomeScreen>;
 };
 
 export default SwipeMenu;

@@ -4,14 +4,7 @@ import SwipeMenu from '@/shared/ui/swipe-menu';
 
 describe('Menu Component', () => {
   it('should render the correct menu item', () => {
-    const { getByText } = render(
-      <SwipeMenu
-        label="Search"
-        onTap={() => {}}
-        onSwipedLeft={() => {}}
-        onSwipedRight={() => {}}
-      />
-    );
+    const { getByText } = render(<SwipeMenu label="Search" />);
     expect(getByText('Search')).toBeTruthy();
   });
 });

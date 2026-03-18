@@ -3,6 +3,8 @@ import { act, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import App from '@/app/app';
 import '@/app/providers/i18n';
+import { resetHardwareInputStore } from '@/app/state/hardware-input-store';
+import { resetPhoneNavigationStore } from '@/app/state/phone-navigation-store';
 import { resetUiStore, useUiStore } from '@/app/state/ui-store';
 import {
   resetSettingsStore,
@@ -35,21 +37,20 @@ const expectNoFifthSegment = () => {
   expect(useUiStore.getState().fifthLevel).toBe(0);
 };
 
-const tap = (element: Element) => {
-  fireEvent.touchStart(element, {
-    targetTouches: [{ clientX: 10, clientY: 10 }],
-  });
-  fireEvent.touchEnd(element);
+const pressMenu = () => {
+  fireEvent.click(screen.getByRole('button', { name: 'Menu' }));
 };
 
-const swipeLeft = (element: Element) => {
-  fireEvent.touchStart(element, {
-    targetTouches: [{ clientX: 120, clientY: 10 }],
-  });
-  fireEvent.touchMove(element, {
-    targetTouches: [{ clientX: 20, clientY: 10 }],
-  });
-  fireEvent.touchEnd(element);
+const pressLeft = () => {
+  fireEvent.click(screen.getByRole('button', { name: 'Left' }));
+};
+
+const pressRight = () => {
+  fireEvent.click(screen.getByRole('button', { name: 'Right' }));
+};
+
+const pressOk = () => {
+  fireEvent.click(screen.getByRole('button', { name: 'OK' }));
 };
 
 const pressBack = () => {
@@ -76,56 +77,67 @@ const flushLazyRoute = async () => {
 
 const renderApp = async () => {
   render(
-    <MemoryRouter initialEntries={['/']}>
+    <MemoryRouter>
       <App />
     </MemoryRouter>
   );
 
   advancePastStartup();
   await flushLazyRoute();
+  expect(screen.getByText(/Press Menu/i)).toBeTruthy();
+  expectIndicator('');
+};
+
+const openMainMenu = async () => {
+  pressMenu();
+  await flushLazyRoute();
   expect(screen.getByText(labels.phoneBook)).toBeTruthy();
   expectIndicator('1');
 };
 
 const navigateHomeToSettings = () => {
-  swipeLeft(screen.getByText(labels.phoneBook));
-  swipeLeft(screen.getByText(labels.messages));
-  swipeLeft(screen.getByText(labels.chat));
-  swipeLeft(screen.getByText(labels.callRegister));
-  swipeLeft(screen.getByText(labels.tones));
-
+  pressRight();
+  expect(screen.getByText(labels.messages)).toBeTruthy();
+  pressRight();
+  expect(screen.getByText(labels.chat)).toBeTruthy();
+  pressRight();
+  expect(screen.getByText(labels.callRegister)).toBeTruthy();
+  pressRight();
+  expect(screen.getByText(labels.tones)).toBeTruthy();
+  pressRight();
   expect(screen.getByText(labels.settings)).toBeTruthy();
   expectIndicator('6');
   expectNoFifthSegment();
 };
 
-const navigateSettingsToGeneral = async () => {
-  tap(screen.getByText(labels.settings));
+const openSettingsPage = async () => {
+  pressOk();
   await flushLazyRoute();
-
-  const callSettingsLabel = screen.getByText(labels.callSettings);
-  swipeLeft(callSettingsLabel);
-  expect(screen.getByText(labels.generalSettings)).toBeTruthy();
-  expectIndicator('6-2');
+  expect(screen.getByText(labels.callSettings)).toBeTruthy();
+  expectIndicator('6-1');
   expectNoFifthSegment();
 };
 
-const navigateGeneralToLanguage = async () => {
-  tap(screen.getByText(labels.generalSettings));
+const openGeneralSettingsPage = async () => {
+  pressRight();
+  expect(screen.getByText(labels.generalSettings)).toBeTruthy();
+  expectIndicator('6-2');
+  pressOk();
   await flushLazyRoute();
-
-  const colorSettingsLabel = screen.getByText(labels.colorSettings);
-  swipeLeft(colorSettingsLabel);
-  expect(screen.getByText(labels.languageSettings)).toBeTruthy();
-  expectIndicator('6-2-2');
+  expect(screen.getByText(labels.colorSettings)).toBeTruthy();
+  expectIndicator('6-2-1');
   expectNoFifthSegment();
 };
 
 const navigateToLanguagePage = async () => {
+  await openMainMenu();
   navigateHomeToSettings();
-  await navigateSettingsToGeneral();
-  await navigateGeneralToLanguage();
-  tap(screen.getByText(labels.languageSettings));
+  await openSettingsPage();
+  await openGeneralSettingsPage();
+  pressRight();
+  expect(screen.getByText(labels.languageSettings)).toBeTruthy();
+  expectIndicator('6-2-2');
+  pressOk();
   await flushLazyRoute();
   expectIndicator('6-2-2-2');
 };
@@ -141,6 +153,8 @@ describe('page indicator navigation integration', () => {
 
     resetSettingsStore();
     resetUiStore();
+    resetPhoneNavigationStore();
+    resetHardwareInputStore();
   });
 
   afterEach(() => {
@@ -148,91 +162,74 @@ describe('page indicator navigation integration', () => {
     vi.useRealTimers();
   });
 
+  it('requires Menu to enter the main menu from standby', async () => {
+    await renderApp();
+    await openMainMenu();
+    expectNoFifthSegment();
+  });
+
   it('composes indicator while drilling down from level 1 to level 4', async () => {
     await renderApp();
-
-    expectIndicator('1');
-    expectNoFifthSegment();
-
-    navigateHomeToSettings();
-    await navigateSettingsToGeneral();
-    await navigateGeneralToLanguage();
-
-    tap(screen.getByText(labels.languageSettings));
-    await flushLazyRoute();
-    expectIndicator('6-2-2-2');
+    await navigateToLanguagePage();
     expectNoFifthSegment();
   });
 
-  it('hides fourth level after going back from a fourth-level page', async () => {
+  it('moves backward through the app-owned stack with the back key', async () => {
     await renderApp();
     await navigateToLanguagePage();
 
-    expectIndicator('6-2-2-2');
-    expectNoFifthSegment();
-
     pressBack();
+    expect(screen.getByText(labels.languageSettings)).toBeTruthy();
     expectIndicator('6-2-2');
-    expectNoFifthSegment();
-  });
-
-  it('hides third and fourth levels after going back two levels', async () => {
-    await renderApp();
-    await navigateToLanguagePage();
 
     pressBack();
-    pressBack();
+    expect(screen.getByText(labels.generalSettings)).toBeTruthy();
     expectIndicator('6-2');
+
+    pressBack();
+    expect(screen.getByText(labels.settings)).toBeTruthy();
+    expectIndicator('6');
     expectNoFifthSegment();
   });
 
-  it('hides second level after going back to first-level menu', async () => {
+  it('returns to standby with the home key', async () => {
     await renderApp();
     await navigateToLanguagePage();
-
-    pressBack();
-    pressBack();
-    pressBack();
-    expectIndicator('6');
-    expectNoFifthSegment();
-  });
-
-  it('keeps fifth level hidden throughout the full flow', async () => {
-    await renderApp();
-
-    expectNoFifthSegment();
-
-    navigateHomeToSettings();
-    await navigateSettingsToGeneral();
-    await navigateGeneralToLanguage();
-    tap(screen.getByText(labels.languageSettings));
-    await flushLazyRoute();
-    expectIndicator('6-2-2-2');
-    expectNoFifthSegment();
-
-    pressBack();
-    expectNoFifthSegment();
-
-    pressBack();
-    expectNoFifthSegment();
-
-    pressBack();
-    expectNoFifthSegment();
-  });
-
-  it('resets first-level indicator when navigating home from deeper levels', async () => {
-    await renderApp();
-
-    navigateHomeToSettings();
-    expectIndicator('6');
 
     pressHome();
     await flushLazyRoute();
-    expectIndicator('1');
+
+    expect(screen.getByText(/Press Menu/i)).toBeTruthy();
+    expectIndicator('');
     expect(useUiStore.getState().firstLevel).toBe(1);
     expect(useUiStore.getState().secondLevel).toBe(0);
     expect(useUiStore.getState().thirdLevel).toBe(0);
     expect(useUiStore.getState().fourthLevel).toBe(0);
     expect(useUiStore.getState().fifthLevel).toBe(0);
+  });
+
+  it('resets to the main menu with the Menu key from deeper screens', async () => {
+    await renderApp();
+    await navigateToLanguagePage();
+
+    pressMenu();
+    await flushLazyRoute();
+
+    expect(screen.getByText(labels.settings)).toBeTruthy();
+    expectIndicator('6');
+    expectNoFifthSegment();
+  });
+
+  it('moves left and right through circular menu items', async () => {
+    await renderApp();
+    await openMainMenu();
+
+    pressRight();
+    expect(screen.getByText(labels.messages)).toBeTruthy();
+    expectIndicator('2');
+
+    pressLeft();
+    expect(screen.getByText(labels.phoneBook)).toBeTruthy();
+    expectIndicator('1');
   });
 });

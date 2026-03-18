@@ -20,7 +20,7 @@ const Container = styled.div`
   padding: 24px 16px 28px;
   box-sizing: border-box;
   background: radial-gradient(
-    circle at top,
+    circle at center,
     #667180 0%,
     #2d343d 36%,
     #11141a 100%
@@ -32,23 +32,13 @@ const UpperContainer = styled.div`
   width: ${phoneWidth};
   min-height: 78px;
   margin: 0 auto;
-  border-radius: 34px 34px 18px 18px;
-  background: linear-gradient(
-    180deg,
-    ${shellColors.bodyHighlight} 0%,
-    ${shellColors.bodyLight} 24%,
-    ${shellColors.bodyMid} 62%,
-    ${shellColors.bodyDark} 100%
-  );
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 60%),
-    inset 0 -4px 8px rgb(0 0 0 / 22%),
-    0 12px 28px rgb(0 0 0 / 40%);
+  border-radius: 34px 34px 0px 0px;
+  background-color: ${shellColors.bodyDark};
 
   &::before {
     content: '';
     position: absolute;
-    top: 20px;
+    bottom: 15px;
     left: 50%;
     width: 110px;
     height: 14px;
@@ -67,7 +57,7 @@ const UpperContainer = styled.div`
   &::after {
     content: '';
     position: absolute;
-    top: 24px;
+    bottom: 15px;
     left: calc(50% + 78px);
     width: 12px;
     height: 12px;
@@ -90,31 +80,16 @@ const ScreenContainer = styled.div`
   padding: 12px;
   box-sizing: border-box;
   display: flex;
-  border-radius: 24px 24px 18px 18px;
-  background: linear-gradient(180deg, #adb3bb 0%, #7a838d 32%, #565f69 100%);
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 70%),
-    inset 0 -4px 8px rgb(0 0 0 / 20%),
-    0 12px 26px rgb(0 0 0 / 36%);
+  background-color: ${shellColors.bodyDark};
 `;
 
 const KeyboardContainer = styled.div`
   position: relative;
   width: ${phoneWidth};
-  margin: -10px auto 0;
   padding: 18px 18px 24px;
   box-sizing: border-box;
-  border-radius: 20px 20px 34px 34px;
-  background: linear-gradient(
-    180deg,
-    ${shellColors.bodyLight} 0%,
-    ${shellColors.bodyMid} 36%,
-    ${shellColors.bodyDark} 100%
-  );
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 55%),
-    inset 0 -6px 10px rgb(0 0 0 / 24%),
-    0 16px 32px rgb(0 0 0 / 45%);
+  border-radius: 0px 0px 34px 34px;
+  background-color: ${shellColors.bodyDark};
 
   &::after {
     content: '';

@@ -22,10 +22,10 @@ const SideColumn = styled.div`
   gap: 12px;
 `;
 
-const buttonBase = css`
+const buttonBase = (backgroundEndColor = '#8c949d') => css`
   border: none;
   color: ${colors.textPrimary};
-  background: linear-gradient(180deg, #d5dae0 0%, #8c949d 100%);
+  background: linear-gradient(180deg, #d5dae0 0%, ${backgroundEndColor} 100%);
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 70%),
     inset 0 -2px 4px rgb(0 0 0 / 18%),
@@ -51,8 +51,8 @@ const buttonBase = css`
   }
 `;
 
-const ActionKey = styled.button`
-  ${buttonBase}
+const ActionKey = styled.button<{ $backgroundColor?: string }>`
+  ${({ $backgroundColor }) => buttonBase($backgroundColor)}
   min-height: 44px;
   border-radius: 16px;
   font-size: 13px;
@@ -61,23 +61,34 @@ const ActionKey = styled.button`
 `;
 
 const NavigationPad = styled.div`
+  --nav-outer-size: clamp(34px, 12vw, 48px);
+  --nav-center-size: clamp(46px, 16vw, 62px);
   flex: 1 1 auto;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns:
+    var(--nav-outer-size)
+    var(--nav-center-size)
+    var(--nav-outer-size);
+  grid-template-rows:
+    var(--nav-outer-size)
+    var(--nav-center-size)
+    var(--nav-outer-size);
   grid-template-areas:
     '. up .'
     'left center right'
     '. down .';
   gap: 8px;
-  align-items: center;
-  justify-items: center;
+  align-content: center;
+  justify-content: center;
+  align-items: stretch;
+  justify-items: stretch;
 `;
 
 const NavKey = styled.button<{ $area: string; $isCenter?: boolean }>`
-  ${buttonBase}
+  ${buttonBase()}
   grid-area: ${({ $area }) => $area};
-  width: ${({ $isCenter }) => ($isCenter ? 'min(62px, 100%)' : 'min(48px, 100%)')};
-  height: ${({ $isCenter }) => ($isCenter ? '62px' : '42px')};
+  width: 100%;
+  height: 100%;
   border-radius: ${({ $isCenter }) => ($isCenter ? '22px' : '16px')};
   font-size: ${({ $isCenter }) => ($isCenter ? '18px' : '15px')};
 `;
@@ -89,7 +100,7 @@ const NumericPad = styled.div`
 `;
 
 const NumericKey = styled.button`
-  ${buttonBase}
+  ${buttonBase()}
   width: 100%;
   min-height: 44px;
   border-radius: 18px;

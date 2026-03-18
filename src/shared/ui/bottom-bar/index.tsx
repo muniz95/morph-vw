@@ -1,7 +1,20 @@
 import S from './styled';
 import { useBottomBarNavigation } from './hooks/use-bottom-bar-navigation';
 
-const numericKeys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '0', '#'];
+const numericKeys = [
+  '1',
+  '2',
+  '3',
+  '4',
+  '5',
+  '6',
+  '7',
+  '8',
+  '9',
+  '*',
+  '0',
+  '#',
+];
 
 const BottomBar = () => {
   const { goBack, goHome } = useBottomBarNavigation();
@@ -13,9 +26,7 @@ const BottomBar = () => {
           <S.ActionKey type="button" disabled>
             Menu
           </S.ActionKey>
-          <S.ActionKey type="button" disabled>
-            Names
-          </S.ActionKey>
+          <S.ActionKey type="button" $backgroundColor="#00ff00" disabled />
         </S.SideColumn>
         <S.NavigationPad aria-hidden="true">
           <S.NavKey type="button" disabled $area="up">
@@ -36,11 +47,15 @@ const BottomBar = () => {
         </S.NavigationPad>
         <S.SideColumn>
           <S.ActionKey type="button" aria-label="Upper Right" onClick={goBack}>
-            {'<'}
+            Back
           </S.ActionKey>
-          <S.ActionKey type="button" aria-label="Lower Right" onClick={goHome}>
-            O
-          </S.ActionKey>
+          <S.ActionKey
+            type="button"
+            aria-label="Lower Right"
+            $backgroundColor="#ff0000"
+            content=""
+            onClick={goHome}
+          ></S.ActionKey>
         </S.SideColumn>
       </S.HardwareDeck>
       <S.NumericPad aria-hidden="true">

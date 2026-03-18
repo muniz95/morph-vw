@@ -33,6 +33,7 @@ const Modal = ({
       showModal={isOpen}
       color={color}
       backlightLevel={backlightLevel}
+      data-testid="modal-overlay"
     >
       <div>
         <S.HiddenCheckbox name="ok" id="ok" readOnly checked={isOpen} />

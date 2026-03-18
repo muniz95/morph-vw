@@ -29,7 +29,7 @@ export const useInactivityBacklight = (
     }, inactivityTimeInSeconds * 1000);
   }, [clearInactivityTimer, inactivityTimeInSeconds]);
 
-  const handleTouchActivity = useCallback(() => {
+  const handleActivity = useCallback(() => {
     setEffectiveBacklightLevel(backlightLevel);
     scheduleDim();
   }, [backlightLevel, scheduleDim]);
@@ -53,23 +53,17 @@ export const useInactivityBacklight = (
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    window.addEventListener('touchstart', handleTouchActivity, {
+    window.addEventListener('pointerdown', handleActivity, {
       passive: true,
     });
-    window.addEventListener('touchmove', handleTouchActivity, {
-      passive: true,
-    });
-    window.addEventListener('touchend', handleTouchActivity, {
-      passive: true,
-    });
+    window.addEventListener('keydown', handleActivity);
 
     return () => {
-      window.removeEventListener('touchstart', handleTouchActivity);
-      window.removeEventListener('touchmove', handleTouchActivity);
-      window.removeEventListener('touchend', handleTouchActivity);
+      window.removeEventListener('pointerdown', handleActivity);
+      window.removeEventListener('keydown', handleActivity);
       clearInactivityTimer();
     };
-  }, [clearInactivityTimer, handleTouchActivity]);
+  }, [clearInactivityTimer, handleActivity]);
 
   return effectiveBacklightLevel;
 };

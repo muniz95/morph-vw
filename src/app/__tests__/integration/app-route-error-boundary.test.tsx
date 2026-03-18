@@ -2,6 +2,8 @@ import { act, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import '@/app/providers/i18n';
+import { resetHardwareInputStore } from '@/app/state/hardware-input-store';
+import { resetPhoneNavigationStore } from '@/app/state/phone-navigation-store';
 import { resetUiStore } from '@/app/state/ui-store';
 import {
   resetSettingsStore,
@@ -20,6 +22,8 @@ describe('App route error boundary integration', () => {
 
     resetSettingsStore();
     resetUiStore();
+    resetPhoneNavigationStore();
+    resetHardwareInputStore();
   });
 
   afterEach(() => {
@@ -39,9 +43,15 @@ describe('App route error boundary integration', () => {
     }));
 
     const { default: App } = await import('@/app/app');
+    const { usePhoneNavigationStore } = await import(
+      '@/app/state/phone-navigation-store'
+    );
+    usePhoneNavigationStore.setState({
+      stack: ['/', '/messages'],
+    });
 
     render(
-      <MemoryRouter initialEntries={['/messages']}>
+      <MemoryRouter>
         <App />
       </MemoryRouter>
     );
@@ -58,7 +68,7 @@ describe('App route error boundary integration', () => {
     expect(screen.getByRole('alert').textContent).toBe(
       'Unexpected route error.'
     );
-    expect(screen.getByText('<')).toBeTruthy();
-    expect(screen.getByText('O')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Upper Right' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Lower Right' })).toBeTruthy();
   });
 });

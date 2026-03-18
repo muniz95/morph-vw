@@ -1,17 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useLocation, useNavigate, useRoutes } from 'react-router-dom';
+import { useRoutes } from 'react-router-dom';
 import routes from '@/app/routes';
 import { useSettingsStore } from '@/features/settings/state/settings-store';
 import { useUiStore } from '@/app/state/ui-store';
 import { useInactivityBacklight } from '@/app/hooks/use-inactivity-backlight';
-
-export const getPathDepth = (pathname: string) =>
-  pathname.split('/').filter((segment) => segment.length > 0).length;
+import { usePhoneNavigation } from '@/app/hooks/use-phone-navigation';
 
 export const useApp = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const routing = useRoutes([...routes]);
+  const { currentPath, goHome, logicalDepth } = usePhoneNavigation();
+  const routing = useRoutes([...routes], currentPath);
 
   const configuredBacklightLevel = useSettingsStore(
     (state) => state.backlightLevel
@@ -31,12 +28,10 @@ export const useApp = () => {
     inactivityTime
   );
 
-  const pathDepth = getPathDepth(location.pathname);
-
   const handleModalAutoClose = useCallback(() => {
     closeModal();
-    navigate('/');
-  }, [closeModal, navigate]);
+    goHome();
+  }, [closeModal, goHome]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -49,17 +44,17 @@ export const useApp = () => {
   return {
     backlightLevel,
     color,
-    routePath: location.pathname,
+    routePath: currentPath,
     showModal,
     firstRender,
     handleModalAutoClose,
     routing,
     indicatorLevels: {
-      firstLevel,
-      secondLevel: pathDepth >= 1 ? secondLevel : 0,
-      thirdLevel: pathDepth >= 2 ? thirdLevel : 0,
-      fourthLevel: pathDepth >= 3 ? fourthLevel : 0,
-      fifthLevel: pathDepth >= 4 ? fifthLevel : 0,
+      firstLevel: logicalDepth >= 1 ? firstLevel : 0,
+      secondLevel: logicalDepth >= 2 ? secondLevel : 0,
+      thirdLevel: logicalDepth >= 3 ? thirdLevel : 0,
+      fourthLevel: logicalDepth >= 4 ? fourthLevel : 0,
+      fifthLevel: logicalDepth >= 5 ? fifthLevel : 0,
     },
   };
 };

@@ -1,7 +1,16 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { fireEvent, render } from '@testing-library/react';
-import { MemoryRouter, Route, Routes, useNavigate } from 'react-router-dom';
+import { act, fireEvent, render } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import '@/app/providers/i18n';
+import {
+  resetHardwareInputStore,
+  useHardwareInputStore,
+} from '@/app/state/hardware-input-store';
+import {
+  resetPhoneNavigationStore,
+  usePhoneNavigationStore,
+} from '@/app/state/phone-navigation-store';
+import { resetUiStore, useUiStore } from '@/app/state/ui-store';
 import { settingsModule } from '@/features/settings/module';
 import SettingsPage from '@/features/settings/ui/pages/settings-page';
 import GeneralSettingsPage from '@/features/settings/ui/pages/general-settings-page';
@@ -15,13 +24,7 @@ import {
   SETTINGS_STORAGE_KEY,
   useSettingsStore,
 } from '@/features/settings/state/settings-store';
-import { resetUiStore, useUiStore } from '@/app/state/ui-store';
 import { DEFAULT_SETTINGS } from '@/features/settings/domain/constants';
-
-const BackPage = () => {
-  const navigate = useNavigate();
-  return <button onClick={() => navigate(-1)}>BACK</button>;
-};
 
 describe('settings module integration', () => {
   beforeEach(() => {
@@ -31,6 +34,8 @@ describe('settings module integration', () => {
     }
     resetSettingsStore();
     resetUiStore();
+    resetPhoneNavigationStore();
+    resetHardwareInputStore();
   });
 
   it('exposes all expected routes', () => {
@@ -49,82 +54,69 @@ describe('settings module integration', () => {
     ]);
   });
 
-  it('navigates from settings menu on tap', () => {
-    const { getByText } = render(
-      <MemoryRouter initialEntries={['/settings']}>
-        <Routes>
-          <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/settings/call" element={<div>CALL</div>} />
-        </Routes>
-      </MemoryRouter>
-    );
-
-    const label = getByText(/Call Settings|callTitle/i);
-    fireEvent.touchStart(label, {
-      targetTouches: [{ clientX: 10, clientY: 10 }],
+  it('pushes the selected settings route on hardware confirm', () => {
+    usePhoneNavigationStore.setState({
+      stack: ['/', '/menu', '/settings'],
     });
-    fireEvent.touchEnd(label);
 
-    expect(getByText('CALL')).toBeTruthy();
+    render(<SettingsPage />);
+
+    act(() => {
+      useHardwareInputStore.getState().triggerConfirm();
+    });
+
+    expect(usePhoneNavigationStore.getState().stack).toEqual([
+      '/',
+      '/menu',
+      '/settings',
+      '/settings/call',
+    ]);
   });
 
-  it('navigates from general settings menu on tap', () => {
-    const { getByText } = render(
-      <MemoryRouter initialEntries={['/settings/general']}>
-        <Routes>
-          <Route path="/settings/general" element={<GeneralSettingsPage />} />
-          <Route path="/settings/general/color" element={<div>COLOR</div>} />
-        </Routes>
-      </MemoryRouter>
-    );
-
-    const label = getByText(/Color Settings|general\.color\.title/i);
-    fireEvent.touchStart(label, {
-      targetTouches: [{ clientX: 10, clientY: 10 }],
+  it('pushes the selected general settings route on hardware confirm', () => {
+    usePhoneNavigationStore.setState({
+      stack: ['/', '/menu', '/settings', '/settings/general'],
     });
-    fireEvent.touchEnd(label);
 
-    expect(getByText('COLOR')).toBeTruthy();
+    render(<GeneralSettingsPage />);
+
+    act(() => {
+      useHardwareInputStore.getState().triggerConfirm();
+    });
+
+    expect(usePhoneNavigationStore.getState().stack).toEqual([
+      '/',
+      '/menu',
+      '/settings',
+      '/settings/general',
+      '/settings/general/color',
+    ]);
   });
 
   it('keeps third-level index when returning from a fourth-level page', () => {
-    const { getByText } = render(
-      <MemoryRouter initialEntries={['/settings/general']}>
-        <Routes>
-          <Route path="/settings/general" element={<GeneralSettingsPage />} />
-          <Route path="/settings/general/light" element={<BackPage />} />
-        </Routes>
-      </MemoryRouter>
-    );
-
-    const colorLabel = getByText(/Color Settings|general\.color\.title/i);
-    fireEvent.touchStart(colorLabel, {
-      targetTouches: [{ clientX: 120, clientY: 10 }],
+    usePhoneNavigationStore.setState({
+      stack: ['/', '/menu', '/settings', '/settings/general'],
     });
-    fireEvent.touchMove(colorLabel, {
-      targetTouches: [{ clientX: 20, clientY: 10 }],
-    });
-    fireEvent.touchEnd(colorLabel);
 
-    const languageLabel = getByText(/Language|general\.languageTitle/i);
-    fireEvent.touchStart(languageLabel, {
-      targetTouches: [{ clientX: 120, clientY: 10 }],
-    });
-    fireEvent.touchMove(languageLabel, {
-      targetTouches: [{ clientX: 20, clientY: 10 }],
-    });
-    fireEvent.touchEnd(languageLabel);
+    render(<GeneralSettingsPage />);
 
-    const lightLabel = getByText(/Light Settings|general\.light\.title/i);
-    fireEvent.touchStart(lightLabel, {
-      targetTouches: [{ clientX: 10, clientY: 10 }],
+    act(() => {
+      useHardwareInputStore.getState().triggerRight();
+      useHardwareInputStore.getState().triggerRight();
+      useHardwareInputStore.getState().triggerConfirm();
     });
-    fireEvent.touchEnd(lightLabel);
 
-    fireEvent.click(getByText('BACK'));
+    act(() => {
+      usePhoneNavigationStore.getState().goBack();
+    });
 
-    expect(getByText(/Light Settings|general\.light\.title/i)).toBeTruthy();
     expect(useUiStore.getState().thirdLevel).toBe(3);
+    expect(usePhoneNavigationStore.getState().stack).toEqual([
+      '/',
+      '/menu',
+      '/settings',
+      '/settings/general',
+    ]);
   });
 
   it('updates light settings sliders and persists values on save', () => {

@@ -10,12 +10,16 @@ const shellColors = {
 };
 
 const phoneWidth = 'min(360px, calc(100vw - 32px))';
+const upperHeight = '78px';
 
 const Container = styled.div`
-  min-height: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   padding: 24px 16px 28px;
   box-sizing: border-box;
@@ -30,7 +34,8 @@ const Container = styled.div`
 const UpperContainer = styled.div`
   position: relative;
   width: ${phoneWidth};
-  min-height: 78px;
+  flex: 0 0 ${upperHeight};
+  height: ${upperHeight};
   margin: 0 auto;
   border-radius: 34px 34px 0px 0px;
   background-color: ${shellColors.bodyDark};
@@ -75,17 +80,22 @@ const UpperContainer = styled.div`
 const ScreenContainer = styled.div`
   position: relative;
   width: ${phoneWidth};
-  height: clamp(320px, 52vh, 420px);
+  flex: 1 1 auto;
+  min-height: 0;
   margin: -8px auto 0;
   padding: 12px;
   box-sizing: border-box;
   display: flex;
+  align-items: stretch;
   background-color: ${shellColors.bodyDark};
+  pointer-events: none;
+  touch-action: none;
 `;
 
 const KeyboardContainer = styled.div`
   position: relative;
   width: ${phoneWidth};
+  flex: 0 0 auto;
   padding: 18px 18px 24px;
   box-sizing: border-box;
   border-radius: 0px 0px 34px 34px;

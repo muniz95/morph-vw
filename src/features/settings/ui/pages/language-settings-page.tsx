@@ -6,7 +6,7 @@ import { useLanguageSettingsController } from '@/features/settings/infrastructur
 
 const LanguageSettingsPage = () => {
   const { t } = useTranslation();
-  const { language, options, save, setLanguage } =
+  const { language, options, save, selectedOption, selectLanguage } =
     useLanguageSettingsController();
 
   return (
@@ -14,7 +14,10 @@ const LanguageSettingsPage = () => {
       <S.MainContainer>
         {options.map((option) => (
           <S.ResultsBox key={option.iso639}>
-            <ListItem onClick={() => setLanguage(option.iso639)}>
+            <ListItem
+              active={selectedOption?.iso639 === option.iso639}
+              onClick={() => selectLanguage(option.iso639)}
+            >
               {option.title}
             </ListItem>
           </S.ResultsBox>

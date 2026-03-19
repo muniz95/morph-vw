@@ -58,13 +58,17 @@ describe('phone shell layout integration', () => {
     expect(screen.getByTestId('phone-shell-screen')).toBeTruthy();
     expect(screen.getByTestId('phone-shell-keyboard')).toBeTruthy();
     expect(screenSurface.contains(screen.getByText(/Press Menu/i))).toBe(true);
-    expect(screen.getByRole('button', { name: 'Upper Right' }).textContent).toBe(
-      'Back'
-    );
-    expect(screen.getByRole('button', { name: 'Lower Right' }).textContent).toBe(
-      'Home'
-    );
+    expect(
+      screen.getByRole('button', { name: 'Upper Right' }).textContent
+    ).toBe('Back');
+    expect(
+      screen.getByRole('button', { name: 'Lower Right' }).textContent
+    ).toBe('Home');
     expect(screen.getByRole('button', { name: 'Menu' })).toBeTruthy();
+    expect(
+      window.getComputedStyle(screen.getByTestId('phone-shell-screen'))
+        .pointerEvents
+    ).toBe('none');
   });
 
   it('keeps startup and modal overlays inside the screen surface', async () => {

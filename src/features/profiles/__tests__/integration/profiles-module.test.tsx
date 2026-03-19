@@ -1,7 +1,11 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { fireEvent, render } from '@testing-library/react';
+import { act, fireEvent, render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import '@/app/providers/i18n';
+import {
+  resetHardwareInputStore,
+  useHardwareInputStore,
+} from '@/app/state/hardware-input-store';
 import { Profile } from '@/features/profiles/domain/profile';
 import { profilesModule } from '@/features/profiles/module';
 import ProfilesPage from '@/features/profiles/ui/pages/profiles-page';
@@ -37,6 +41,7 @@ describe('profiles module integration', () => {
   beforeEach(() => {
     resetUiStore();
     resetProfilesStore();
+    resetHardwareInputStore();
     useProfilesStore.setState({
       profiles: [factoryProfile, customProfile],
       currentProfile: factoryProfile,
@@ -61,6 +66,25 @@ describe('profiles module integration', () => {
 
     fireEvent.click(getByText('Custom'));
     fireEvent.click(getByText(/Save|save|Salvar/i));
+
+    expect(useProfilesStore.getState().currentProfile.name).toBe('Custom');
+    expect(useUiStore.getState().showModal).toBe(true);
+  });
+
+  it('moves through profiles with hardware keys and applies the selected profile', () => {
+    render(
+      <MemoryRouter initialEntries={['/profiles']}>
+        <ProfilesPage />
+      </MemoryRouter>
+    );
+
+    act(() => {
+      useHardwareInputStore.getState().triggerDown();
+    });
+
+    act(() => {
+      useHardwareInputStore.getState().triggerConfirm();
+    });
 
     expect(useProfilesStore.getState().currentProfile.name).toBe('Custom');
     expect(useUiStore.getState().showModal).toBe(true);

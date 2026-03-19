@@ -1,7 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { fireEvent, render } from '@testing-library/react';
+import { act, fireEvent, render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import '@/app/providers/i18n';
+import {
+  resetHardwareInputStore,
+  useHardwareInputStore,
+} from '@/app/state/hardware-input-store';
 import { SimNumber } from '@/features/sim-services/domain/sim-number';
 import { simServicesModule } from '@/features/sim-services/module';
 import SimServicesPage from '@/features/sim-services/ui/pages/sim-services-page';
@@ -43,6 +47,7 @@ describe('sim-services module integration', () => {
   beforeEach(() => {
     resetUiStore();
     resetSimNumbersStore();
+    resetHardwareInputStore();
     mocks.say.mockReset();
     mocks.useSimNumbersData.mockReturnValue(mockSimNumbers);
   });
@@ -55,20 +60,27 @@ describe('sim-services module integration', () => {
     expect(routePaths).toEqual(['/simservices']);
   });
 
-  it('enables play after selecting a service and speaks selected message', () => {
-    const { getByRole, getByText } = render(
+  it('navigates services with hardware keys and plays the selected message', () => {
+    const { getByRole } = render(
       <MemoryRouter initialEntries={['/simservices']}>
         <SimServicesPage />
       </MemoryRouter>
     );
 
     const playButton = getByRole('button', { name: /play|reproduzir/i });
-    expect(playButton.hasAttribute('disabled')).toBe(true);
-
-    fireEvent.click(getByText('Provider'));
     expect(playButton.hasAttribute('disabled')).toBe(false);
 
+    act(() => {
+      useHardwareInputStore.getState().triggerDown();
+    });
+
+    act(() => {
+      useHardwareInputStore.getState().triggerConfirm();
+    });
+
+    expect(mocks.say).toHaveBeenCalledWith('You have a voice message.');
+
     fireEvent.click(playButton);
-    expect(mocks.say).toHaveBeenCalledWith('This is your provider.');
+    expect(mocks.say).toHaveBeenCalledWith('You have a voice message.');
   });
 });

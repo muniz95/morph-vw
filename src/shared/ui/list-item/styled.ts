@@ -13,21 +13,28 @@ const listItemLayout = css`
   padding: 4px;
 `;
 
-const Interactive = styled(UiButton)`
+const activeListItem = css`
+  font-weight: bold;
+  background-color: ${colors.focusBackground};
+  color: ${colors.textInverse};
+`;
+
+const Interactive = styled(UiButton)<{ $isActive?: boolean }>`
   ${listItemLayout}
   border: none;
+
+  ${({ $isActive }) => $isActive && activeListItem}
 
   &:active,
   &:focus,
   &:focus-visible {
-    font-weight: bold;
-    background-color: ${colors.focusBackground};
-    color: ${colors.textInverse};
+    ${activeListItem}
   }
 `;
 
-const Static = styled.div`
+const Static = styled.div<{ $isActive?: boolean }>`
   ${listItemLayout}
+  ${({ $isActive }) => $isActive && activeListItem}
 `;
 
 const S = {

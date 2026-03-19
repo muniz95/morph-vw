@@ -6,7 +6,7 @@ import { useSimServicesController } from '@/features/sim-services/infrastructure
 
 const SimServicesPage = () => {
   const { t } = useTranslation(['simservices']);
-  const { simNumbers, setCurrentSimNumber, canPlay, play } =
+  const { simNumbers, currentSimNumber, setCurrentSimNumber, canPlay, play } =
     useSimServicesController();
 
   return (
@@ -14,7 +14,10 @@ const SimServicesPage = () => {
       <S.MainContainer>
         {simNumbers.map((service) => (
           <S.ResultsBox key={service.id}>
-            <ListItem onClick={() => setCurrentSimNumber(service)}>
+            <ListItem
+              active={currentSimNumber?.id === service.id}
+              onClick={() => setCurrentSimNumber(service)}
+            >
               {service.name}
             </ListItem>
           </S.ResultsBox>

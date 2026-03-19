@@ -2,10 +2,15 @@ import { useTonesController } from '@/features/tones/infrastructure/controllers/
 import TonesList from '@/features/tones/ui/components/tones-list';
 
 const TonesPage = () => {
-  const { tones, playTone, isPlaying } = useTonesController();
+  const { tones, playTone, isPlaying, selectedTone } = useTonesController();
 
   return (
-    <TonesList tones={tones} onPlayTone={playTone} controlsLocked={isPlaying} />
+    <TonesList
+      activeToneName={selectedTone?.name}
+      tones={tones}
+      onPlayTone={playTone}
+      controlsLocked={isPlaying}
+    />
   );
 };
 

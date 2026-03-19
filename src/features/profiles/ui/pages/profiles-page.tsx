@@ -6,7 +6,7 @@ import { useProfilesController } from '@/features/profiles/infrastructure/contro
 
 const ProfilesPage = () => {
   const { t } = useTranslation(['profiles']);
-  const { profiles, selectedProfile, setSelectedProfile, applyProfile } =
+  const { profiles, selectedProfile, selectProfile, applyProfile } =
     useProfilesController();
 
   return (
@@ -14,7 +14,10 @@ const ProfilesPage = () => {
       <S.MainContainer>
         {profiles.map((profile) => (
           <S.ResultsBox key={profile.name}>
-            <ListItem onClick={() => setSelectedProfile(profile)}>
+            <ListItem
+              active={selectedProfile?.id === profile.id}
+              onClick={() => selectProfile(profile)}
+            >
               {profile.isFactoryProfile ? t(profile.name) : profile.name}
             </ListItem>
           </S.ResultsBox>

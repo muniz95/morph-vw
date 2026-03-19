@@ -6,13 +6,18 @@ import { useColorSettingsController } from '@/features/settings/infrastructure/c
 
 const ColorSettingsPage = () => {
   const { t } = useTranslation(['settings']);
-  const { color, options, save, setColor } = useColorSettingsController();
+  const { color, options, save, selectedOption, selectColor } =
+    useColorSettingsController();
 
   return (
     <>
       <S.MainContainer>
         {options.map((option) => (
-          <ListItem key={option.rgb} onClick={() => setColor(option.rgb)}>
+          <ListItem
+            key={option.rgb}
+            active={selectedOption?.rgb === option.rgb}
+            onClick={() => selectColor(option.rgb)}
+          >
             {t(option.titleKey)}
           </ListItem>
         ))}

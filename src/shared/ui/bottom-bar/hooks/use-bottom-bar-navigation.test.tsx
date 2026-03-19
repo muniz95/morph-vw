@@ -45,11 +45,15 @@ describe('useBottomBarNavigation', () => {
   });
 
   it('routes nav key actions through registered hardware handlers', () => {
+    const onUp = vi.fn();
+    const onDown = vi.fn();
     const onLeft = vi.fn();
     const onRight = vi.fn();
     const onConfirm = vi.fn();
 
     useHardwareInputStore.getState().setHandlers({
+      onUp,
+      onDown,
       onLeft,
       onRight,
       onConfirm,
@@ -58,11 +62,15 @@ describe('useBottomBarNavigation', () => {
     const { result } = renderHook(() => useBottomBarNavigation());
 
     act(() => {
+      result.current.moveUp();
+      result.current.moveDown();
       result.current.moveLeft();
       result.current.moveRight();
       result.current.confirm();
     });
 
+    expect(onUp).toHaveBeenCalledTimes(1);
+    expect(onDown).toHaveBeenCalledTimes(1);
     expect(onLeft).toHaveBeenCalledTimes(1);
     expect(onRight).toHaveBeenCalledTimes(1);
     expect(onConfirm).toHaveBeenCalledTimes(1);

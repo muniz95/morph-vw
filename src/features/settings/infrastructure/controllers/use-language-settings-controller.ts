@@ -3,6 +3,7 @@ import { LANGUAGE_OPTIONS } from '@/features/settings/domain/constants';
 import { useSettingsStore } from '@/features/settings/state/settings-store';
 import { useUiStore } from '@/app/state/ui-store';
 import vibration from '@/shared/lib/vibration';
+import { useVerticalHardwareListNavigation } from '@/shared/hooks/use-vertical-hardware-list-navigation';
 
 export const useLanguageSettingsController = () => {
   const currentLanguage = useSettingsStore((state) => state.language);
@@ -24,9 +25,29 @@ export const useLanguageSettingsController = () => {
 
   const options = useMemo(() => LANGUAGE_OPTIONS, []);
 
+  const { selectedItem: selectedOption, setSelectedIndex } =
+    useVerticalHardwareListNavigation({
+      items: options,
+      initialIndex: options.findIndex(
+        (option) => option.iso639 === currentLanguage
+      ),
+      onConfirm: () => save(),
+      onSelect: (option) => setLanguage(option.iso639),
+    });
+
+  const selectLanguage = useCallback(
+    (nextLanguage: string) => {
+      setSelectedIndex(
+        options.findIndex((option) => option.iso639 === nextLanguage)
+      );
+    },
+    [options, setSelectedIndex]
+  );
+
   return {
     language,
-    setLanguage,
+    selectedOption,
+    selectLanguage,
     options,
     save,
   };

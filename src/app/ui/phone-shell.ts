@@ -88,6 +88,8 @@ const ScreenContainer = styled.div`
   display: flex;
   align-items: stretch;
   background-color: ${shellColors.bodyDark};
+  pointer-events: none;
+  touch-action: none;
 `;
 
 const KeyboardContainer = styled.div`

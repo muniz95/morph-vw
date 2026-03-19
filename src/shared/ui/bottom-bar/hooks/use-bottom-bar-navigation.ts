@@ -3,6 +3,8 @@ import { useHardwareInputStore } from '@/app/state/hardware-input-store';
 
 export const useBottomBarNavigation = () => {
   const handlers = useHardwareInputStore((state) => state.handlers);
+  const triggerUp = useHardwareInputStore((state) => state.triggerUp);
+  const triggerDown = useHardwareInputStore((state) => state.triggerDown);
   const triggerLeft = useHardwareInputStore((state) => state.triggerLeft);
   const triggerRight = useHardwareInputStore((state) => state.triggerRight);
   const triggerConfirm = useHardwareInputStore((state) => state.triggerConfirm);
@@ -13,11 +15,15 @@ export const useBottomBarNavigation = () => {
     canConfirm: Boolean(handlers.onConfirm),
     canGoBack,
     canGoHome: currentPath !== '/',
+    canMoveUp: Boolean(handlers.onUp),
+    canMoveDown: Boolean(handlers.onDown),
     canMoveLeft: Boolean(handlers.onLeft),
     canMoveRight: Boolean(handlers.onRight),
     confirm: triggerConfirm,
     goBack,
     goHome,
+    moveUp: triggerUp,
+    moveDown: triggerDown,
     moveLeft: triggerLeft,
     moveRight: triggerRight,
     openMenu,

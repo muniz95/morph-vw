@@ -21,11 +21,15 @@ const BottomBar = () => {
     canConfirm,
     canGoBack,
     canGoHome,
+    canMoveDown,
     canMoveLeft,
     canMoveRight,
+    canMoveUp,
     confirm,
     goBack,
     goHome,
+    moveDown,
+    moveUp,
     moveLeft,
     moveRight,
     openMenu,
@@ -41,7 +45,13 @@ const BottomBar = () => {
           <S.ActionKey type="button" $backgroundColor="#00ff00" disabled />
         </S.SideColumn>
         <S.NavigationPad>
-          <S.NavKey type="button" disabled $area="up">
+          <S.NavKey
+            type="button"
+            aria-label="Up"
+            disabled={!canMoveUp}
+            $area="up"
+            onClick={moveUp}
+          >
             ^
           </S.NavKey>
           <S.NavKey
@@ -72,7 +82,13 @@ const BottomBar = () => {
           >
             {'>'}
           </S.NavKey>
-          <S.NavKey type="button" disabled $area="down">
+          <S.NavKey
+            type="button"
+            aria-label="Down"
+            disabled={!canMoveDown}
+            $area="down"
+            onClick={moveDown}
+          >
             v
           </S.NavKey>
         </S.NavigationPad>

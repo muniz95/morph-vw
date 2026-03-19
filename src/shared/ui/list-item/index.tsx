@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import S from './styled';
 
 interface ListItemProps {
+  active?: boolean;
   children: ReactNode;
   disabled?: boolean;
   onClick?: () => void;
@@ -9,6 +10,7 @@ interface ListItemProps {
 }
 
 const ListItem = ({
+  active = false,
   children,
   disabled = false,
   onClick,
@@ -18,7 +20,9 @@ const ListItem = ({
     return (
       <S.Interactive
         type="button"
+        aria-selected={active}
         data-testid={testId}
+        $isActive={active}
         onClick={onClick}
         disabled={disabled}
       >
@@ -27,7 +31,11 @@ const ListItem = ({
     );
   }
 
-  return <S.Static data-testid={testId}>{children}</S.Static>;
+  return (
+    <S.Static aria-selected={active} data-testid={testId} $isActive={active}>
+      {children}
+    </S.Static>
+  );
 };
 
 export default ListItem;

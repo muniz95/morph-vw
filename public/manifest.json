@@ -1,7 +1,7 @@
 {
   "id": "/",
-  "name": "Vapour NR1 Cellphone Simulator",
-  "short_name": "Vapour NR1",
+  "name": "Morph VW",
+  "short_name": "Morph VW",
   "description": "A web simulator of a classic 2001 cellphone experience.",
   "lang": "en-US",
   "icons": [
@@ -35,5 +35,5 @@
   "display": "standalone",
   "orientation": "portrait",
   "theme_color": "#c0b400",
-  "background_color": "#c0b400"
+  "background_color": "#220000"
 }

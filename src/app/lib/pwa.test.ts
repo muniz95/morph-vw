@@ -4,6 +4,7 @@ import {
   getPwaState,
   initPwa,
   installPwa,
+  registerServiceWorkerForTests,
   resetPwaStateForTests,
   setWaitingServiceWorkerForTests,
 } from '@/app/lib/pwa';
@@ -54,11 +55,35 @@ describe('pwa service', () => {
 
     setWaitingServiceWorkerForTests({ postMessage });
     expect(getPwaState().updateAvailable).toBe(true);
+    expect(getPwaState().indicatorState).toBe('update-available');
 
     applyPwaUpdate();
 
     expect(postMessage).toHaveBeenCalledWith({ type: 'SKIP_WAITING' });
     expect(getPwaState().updateAvailable).toBe(false);
+    expect(getPwaState().indicatorState).toBe('updating');
+  });
+
+  it('sets an error indicator when service worker registration fails', async () => {
+    const register = vi.fn().mockRejectedValue(new Error('boom'));
+    const consoleError = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
+
+    Object.defineProperty(navigator, 'serviceWorker', {
+      configurable: true,
+      value: {
+        register,
+        addEventListener: vi.fn(),
+      },
+    });
+
+    await registerServiceWorkerForTests();
+
+    expect(register).toHaveBeenCalledWith('/sw.js');
+    expect(getPwaState().indicatorState).toBe('error');
+
+    consoleError.mockRestore();
   });
 
   it('keeps all flags disabled when no install/update events are emitted', () => {
@@ -68,6 +93,7 @@ describe('pwa service', () => {
       canInstall: false,
       updateAvailable: false,
       offlineReady: false,
+      indicatorState: 'idle',
     });
   });
 });

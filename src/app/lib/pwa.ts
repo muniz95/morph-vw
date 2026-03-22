@@ -1,13 +1,21 @@
+export type PwaIndicatorState =
+  | 'idle'
+  | 'update-available'
+  | 'updating'
+  | 'error';
+
 type PwaState = {
   canInstall: boolean;
   updateAvailable: boolean;
   offlineReady: boolean;
+  indicatorState: PwaIndicatorState;
 };
 
 const defaultState: PwaState = {
   canInstall: false,
   updateAvailable: false,
   offlineReady: false,
+  indicatorState: 'idle',
 };
 
 let state: PwaState = { ...defaultState };
@@ -25,17 +33,39 @@ const notify = () => {
   listeners.forEach((listener) => listener());
 };
 
-const setState = (partial: Partial<PwaState>) => {
+const setState = (
+  partial: Partial<PwaState> | ((current: PwaState) => Partial<PwaState>)
+) => {
+  const nextPartial = typeof partial === 'function' ? partial(state) : partial;
+
   state = {
     ...state,
-    ...partial,
+    ...nextPartial,
   };
   notify();
 };
 
-const setWaitingServiceWorker = (worker: ServiceWorkerLike | null) => {
+const setWaitingServiceWorker = (
+  worker: ServiceWorkerLike | null,
+  indicatorState: PwaIndicatorState = worker ? 'update-available' : 'idle'
+) => {
   waitingServiceWorker = worker;
-  setState({ updateAvailable: worker !== null });
+  setState({
+    updateAvailable: worker !== null,
+    indicatorState,
+  });
+};
+
+const setPwaError = (
+  error: unknown,
+  label: string,
+  partial: Partial<PwaState> = {}
+) => {
+  console.error(label, error);
+  setState({
+    ...partial,
+    indicatorState: 'error',
+  });
 };
 
 const onBeforeInstallPrompt = (event: Event) => {
@@ -83,8 +113,11 @@ const observeRegistration = (registration: ServiceWorkerRegistration) => {
   });
 };
 
-const registerServiceWorker = async () => {
-  if (!import.meta.env.PROD || !('serviceWorker' in navigator)) {
+const registerServiceWorker = async (options?: { force?: boolean }) => {
+  if (
+    (!import.meta.env.PROD && !options?.force) ||
+    !('serviceWorker' in navigator)
+  ) {
     return;
   }
 
@@ -101,7 +134,7 @@ const registerServiceWorker = async () => {
       window.location.reload();
     });
   } catch (error) {
-    console.error('pwa: service worker registration failed', error);
+    setPwaError(error, 'pwa: service worker registration failed');
   }
 };
 
@@ -136,8 +169,12 @@ export const installPwa = async () => {
   deferredPrompt = null;
   setState({ canInstall: false });
 
-  await promptEvent.prompt();
-  await promptEvent.userChoice;
+  try {
+    await promptEvent.prompt();
+    await promptEvent.userChoice;
+  } catch (error) {
+    setPwaError(error, 'pwa: install prompt failed');
+  }
 };
 
 export const applyPwaUpdate = () => {
@@ -145,8 +182,21 @@ export const applyPwaUpdate = () => {
     return;
   }
 
-  waitingServiceWorker.postMessage({ type: 'SKIP_WAITING' });
-  setWaitingServiceWorker(null);
+  const worker = waitingServiceWorker;
+
+  setState({
+    updateAvailable: false,
+    indicatorState: 'updating',
+  });
+
+  try {
+    worker.postMessage({ type: 'SKIP_WAITING' });
+    waitingServiceWorker = null;
+  } catch (error) {
+    setPwaError(error, 'pwa: apply update failed', {
+      updateAvailable: true,
+    });
+  }
 };
 
 export const resetPwaStateForTests = () => {
@@ -167,4 +217,8 @@ export const setWaitingServiceWorkerForTests = (
   worker: ServiceWorkerLike | null
 ) => {
   setWaitingServiceWorker(worker);
+};
+
+export const registerServiceWorkerForTests = async () => {
+  await registerServiceWorker({ force: true });
 };

@@ -151,8 +151,8 @@ const resolvePwaPlugin = async (): Promise<PluginOption | null> => {
       includeAssets: ['favicon.ico', 'icons/icon-192.png', 'icons/icon-512.png'],
       manifest: {
         id: '/',
-        name: 'Vapour NR1 Cellphone Simulator',
-        short_name: 'Vapour NR1',
+        name: 'Morph VW',
+        short_name: 'Morph VW',
         description: 'A web simulator of a classic 2001 cellphone experience.',
         lang: 'en-US',
         start_url: '/',

@@ -1,5 +1,5 @@
-const APP_SHELL_CACHE = 'vapour-nr1-shell-v1';
-const ASSET_CACHE = 'vapour-nr1-assets-v1';
+const APP_SHELL_CACHE = 'morph-vw-shell-v1';
+const ASSET_CACHE = 'morph-vw-assets-v1';
 const KNOWN_CACHES = [APP_SHELL_CACHE, ASSET_CACHE];
 const APP_SHELL_FILES = ['/', '/index.html', '/manifest.json', '/favicon.ico'];
 

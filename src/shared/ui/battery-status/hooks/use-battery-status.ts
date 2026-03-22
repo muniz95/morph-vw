@@ -1,6 +1,13 @@
 import { useState, useEffect } from 'react';
 
-type Indicator = 'empty' | 'halfEmpty' | 'half' | 'halfFull' | 'full';
+export type Indicator = 'empty' | 'halfEmpty' | 'half' | 'halfFull' | 'full';
+
+export type BatteryStatusModel = {
+  batteryLevel: number;
+  isRecharging: boolean;
+  getInterval: (indicatorLevel: Indicator) => number;
+  getVisibility: (indicatorLevel: Indicator) => boolean;
+};
 
 const indicatorLevelValues = {
   empty: { min: 0, max: 20 },
@@ -13,7 +20,7 @@ const indicatorLevelValues = {
 const isBetween = (value: number, min: number, max: number) =>
   value >= min && value <= max;
 
-export const useBatteryStatus = () => {
+export const useBatteryStatus = (): BatteryStatusModel => {
   const [isRecharging, setIsRecharging] = useState(false);
   const [batteryLevel, setBatteryLevel] = useState(0);
   const [timeSpentOnPage, setTimeSpentOnPage] = useState(0);
@@ -61,6 +68,8 @@ export const useBatteryStatus = () => {
   }, [batteryLevel]);
 
   return {
+    batteryLevel,
+    isRecharging,
     getInterval,
     getVisibility,
   };

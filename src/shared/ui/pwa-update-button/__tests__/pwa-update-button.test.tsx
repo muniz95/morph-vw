@@ -1,11 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render } from '@testing-library/react';
-import PwaBanner from '@/shared/ui/pwa-banner';
+import PwaUpdateButton from '@/shared/ui/pwa-update-button';
 
 const hookMock = vi.hoisted(() => ({
   canInstall: false,
   updateAvailable: false,
   offlineReady: false,
+  indicatorState: 'idle' as const,
   install: vi.fn().mockResolvedValue(undefined),
   applyUpdate: vi.fn(),
 }));
@@ -15,42 +16,37 @@ vi.mock('@/app/hooks/use-pwa', () => ({
     canInstall: hookMock.canInstall,
     updateAvailable: hookMock.updateAvailable,
     offlineReady: hookMock.offlineReady,
+    indicatorState: hookMock.indicatorState,
     install: hookMock.install,
     applyUpdate: hookMock.applyUpdate,
   }),
 }));
 
-describe('PwaBanner', () => {
+describe('PwaUpdateButton', () => {
   beforeEach(() => {
-    hookMock.canInstall = false;
     hookMock.updateAvailable = false;
-    hookMock.install.mockClear();
     hookMock.applyUpdate.mockClear();
   });
 
-  it('does not render when no install or update action is available', () => {
-    const { container } = render(<PwaBanner />);
+  it('renders disabled when no update is available', () => {
+    const { getByRole } = render(<PwaUpdateButton />);
+    const button = getByRole('button', {
+      name: /update app/i,
+    }) as HTMLButtonElement;
 
-    expect(container.textContent).toBe('');
+    expect(button.disabled).toBe(true);
   });
 
-  it('renders install action and triggers install flow', () => {
-    hookMock.canInstall = true;
-    const { getByRole } = render(<PwaBanner />);
-    const button = getByRole('button', { name: /Install/i });
-
-    fireEvent.click(button);
-
-    expect(hookMock.install).toHaveBeenCalledTimes(1);
-  });
-
-  it('renders update action and applies update', () => {
+  it('enables the action and applies the update when clicked', () => {
     hookMock.updateAvailable = true;
-    const { getByRole } = render(<PwaBanner />);
-    const button = getByRole('button', { name: /Update/i });
+    const { getByRole } = render(<PwaUpdateButton />);
+    const button = getByRole('button', {
+      name: /update app/i,
+    }) as HTMLButtonElement;
 
     fireEvent.click(button);
 
+    expect(button.disabled).toBe(false);
     expect(hookMock.applyUpdate).toHaveBeenCalledTimes(1);
   });
 });

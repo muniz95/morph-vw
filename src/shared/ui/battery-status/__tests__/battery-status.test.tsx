@@ -2,11 +2,14 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import BatteryStatus from '@/shared/ui/battery-status';
 import { render } from '@testing-library/react';
 import { ReactNode } from 'react';
+import type { BatteryStatusModel } from '@/shared/ui/battery-status/hooks/use-battery-status';
 
-const hookMock = vi.hoisted(() => ({
+const statusMock = {
+  batteryLevel: 42,
+  isRecharging: false,
   getInterval: vi.fn(),
   getVisibility: vi.fn(),
-}));
+} satisfies BatteryStatusModel;
 
 vi.mock('@/shared/ui/blink', () => ({
   default: ({
@@ -22,46 +25,39 @@ vi.mock('@/shared/ui/blink', () => ({
   ),
 }));
 
-vi.mock('@/shared/ui/battery-status/hooks/use-battery-status', () => ({
-  useBatteryStatus: () => ({
-    getInterval: hookMock.getInterval,
-    getVisibility: hookMock.getVisibility,
-  }),
-}));
-
 describe('BatteryStatus', () => {
   beforeEach(() => {
-    hookMock.getInterval.mockImplementation(() => 0);
-    hookMock.getVisibility.mockImplementation(() => true);
+    statusMock.getInterval.mockImplementation(() => 0);
+    statusMock.getVisibility.mockImplementation(() => true);
   });
 
   it('renders battery indicator container and label', () => {
-    const { container } = render(<BatteryStatus />);
+    const { container } = render(<BatteryStatus status={statusMock} />);
 
     expect(container).toBeTruthy();
     expect(container.textContent).toContain('B');
   });
 
   it('renders five blink segments (one per battery level)', () => {
-    const { getAllByTestId } = render(<BatteryStatus />);
+    const { getAllByTestId } = render(<BatteryStatus status={statusMock} />);
 
     expect(getAllByTestId('blink')).toHaveLength(5);
   });
 
-  it('queries all indicator levels from battery hook helpers', () => {
-    render(<BatteryStatus />);
+  it('queries all indicator levels from the provided battery status model', () => {
+    render(<BatteryStatus status={statusMock} />);
 
-    expect(hookMock.getInterval).toHaveBeenCalledWith('full');
-    expect(hookMock.getInterval).toHaveBeenCalledWith('halfFull');
-    expect(hookMock.getInterval).toHaveBeenCalledWith('half');
-    expect(hookMock.getInterval).toHaveBeenCalledWith('halfEmpty');
-    expect(hookMock.getInterval).toHaveBeenCalledWith('empty');
+    expect(statusMock.getInterval).toHaveBeenCalledWith('full');
+    expect(statusMock.getInterval).toHaveBeenCalledWith('halfFull');
+    expect(statusMock.getInterval).toHaveBeenCalledWith('half');
+    expect(statusMock.getInterval).toHaveBeenCalledWith('halfEmpty');
+    expect(statusMock.getInterval).toHaveBeenCalledWith('empty');
 
-    expect(hookMock.getVisibility).toHaveBeenCalledWith('full');
-    expect(hookMock.getVisibility).toHaveBeenCalledWith('halfFull');
-    expect(hookMock.getVisibility).toHaveBeenCalledWith('half');
-    expect(hookMock.getVisibility).toHaveBeenCalledWith('halfEmpty');
-    expect(hookMock.getVisibility).toHaveBeenCalledWith('empty');
+    expect(statusMock.getVisibility).toHaveBeenCalledWith('full');
+    expect(statusMock.getVisibility).toHaveBeenCalledWith('halfFull');
+    expect(statusMock.getVisibility).toHaveBeenCalledWith('half');
+    expect(statusMock.getVisibility).toHaveBeenCalledWith('halfEmpty');
+    expect(statusMock.getVisibility).toHaveBeenCalledWith('empty');
   });
 
   it('passes interval values from hook to blink segments', () => {
@@ -73,11 +69,11 @@ describe('BatteryStatus', () => {
       empty: 600,
     } as const;
 
-    hookMock.getInterval.mockImplementation(
+    statusMock.getInterval.mockImplementation(
       (level: keyof typeof intervalByLevel) => intervalByLevel[level]
     );
 
-    const { getAllByTestId } = render(<BatteryStatus />);
+    const { getAllByTestId } = render(<BatteryStatus status={statusMock} />);
 
     const intervals = getAllByTestId('blink').map((node) =>
       Number(node.getAttribute('data-interval'))

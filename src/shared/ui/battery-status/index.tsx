@@ -1,9 +1,13 @@
 import S from './styled';
 import Blink from '@/shared/ui/blink';
-import { useBatteryStatus } from './hooks/use-battery-status';
+import type { BatteryStatusModel } from './hooks/use-battery-status';
 
-const BatteryStatus = () => {
-  const { getInterval, getVisibility } = useBatteryStatus();
+type BatteryStatusProps = {
+  status: BatteryStatusModel;
+};
+
+const BatteryStatus = ({ status }: BatteryStatusProps) => {
+  const { getInterval, getVisibility } = status;
 
   return (
     <S.BatteryStatus>

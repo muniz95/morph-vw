@@ -1,46 +1,46 @@
 import { describe, expect, it } from 'vitest';
 import { render } from '@testing-library/react';
-import PwaLedIndicator, {
+import LedIndicator, {
   resolveLedIndicatorState,
-} from '@/shared/ui/pwa-led-indicator';
+} from '@/shared/ui/led-indicator';
 
 describe('PwaLedIndicator', () => {
   it('does not render in the idle state', () => {
-    const { queryByRole } = render(<PwaLedIndicator state="idle" />);
+    const { queryByRole } = render(<LedIndicator state="idle" />);
 
     expect(queryByRole('status')).toBeNull();
   });
 
   it('renders blue update-available status', () => {
-    const { getByRole } = render(<PwaLedIndicator state="update-available" />);
+    const { getByRole } = render(<LedIndicator state="update-available" />);
     const indicator = getByRole('status', { name: /update available/i });
 
     expect(indicator.getAttribute('data-state')).toBe('update-available');
   });
 
   it('renders flashing yellow updating status', () => {
-    const { getByRole } = render(<PwaLedIndicator state="updating" />);
+    const { getByRole } = render(<LedIndicator state="updating" />);
     const indicator = getByRole('status', { name: /updating app/i });
 
     expect(indicator.getAttribute('data-state')).toBe('updating');
   });
 
   it('renders red error status', () => {
-    const { getByRole } = render(<PwaLedIndicator state="error" />);
+    const { getByRole } = render(<LedIndicator state="error" />);
     const indicator = getByRole('status', { name: /pwa update error/i });
 
     expect(indicator.getAttribute('data-state')).toBe('error');
   });
 
   it('renders white status while charging', () => {
-    const { getByRole } = render(<PwaLedIndicator state="charging" />);
+    const { getByRole } = render(<LedIndicator state="charging" />);
     const indicator = getByRole('status', { name: /battery charging/i });
 
     expect(indicator.getAttribute('data-state')).toBe('charging');
   });
 
   it('renders red status for low battery', () => {
-    const { getByRole } = render(<PwaLedIndicator state="battery-low" />);
+    const { getByRole } = render(<LedIndicator state="battery-low" />);
     const indicator = getByRole('status', { name: /battery low/i });
 
     expect(indicator.getAttribute('data-state')).toBe('battery-low');

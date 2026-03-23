@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 import HomeScreen from '@/shared/ui/home-screen';
 import { useTimerController } from '@/features/clock/infrastructure/controllers/use-timer-controller';
-import { formatClockTime } from '@/features/clock/domain/use-cases';
 import { useSettingsStore } from '@/features/settings/state/settings-store';
+import { formatClockTime } from '@/shared/utils/date-time.util';
 
 const StandbyBody = styled.div`
   display: flex;
@@ -39,7 +39,7 @@ const StandbyPage = () => {
   return (
     <HomeScreen>
       <StandbyBody>
-        <TimeLabel>{formatClockTime(date, locale).slice(0, 4)}</TimeLabel>
+        <TimeLabel>{formatClockTime(date, locale).slice(0, 5)}</TimeLabel>
         <DateLabel>{date.toLocaleDateString(locale)}</DateLabel>
         <HintLabel>Press Menu</HintLabel>
       </StandbyBody>

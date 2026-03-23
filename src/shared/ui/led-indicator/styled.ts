@@ -80,8 +80,8 @@ const ledStyles = {
 
 const Container = styled.div<{ $state: ActiveIndicatorState }>`
   position: absolute;
-  top: 12px;
-  left: 16px;
+  top: 20px;
+  left: 20px;
   z-index: 1;
   width: 11px;
   height: 11px;

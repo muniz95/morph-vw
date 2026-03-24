@@ -1,8 +1,12 @@
-import { render, fireEvent } from '@testing-library/react';
+import { act, render } from '@testing-library/react';
 import { useSearchController } from '@/features/phone-book/infrastructure/controllers/use-search-controller';
 import SearchPage from '@/features/phone-book/ui/pages/search-page';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Contact } from '@/features/phone-book/domain/contact';
+import {
+  resetPhoneTextEntryStore,
+  usePhoneTextEntryStore,
+} from '@/app/state/phone-text-entry-store';
 
 vi.mock(
   '@/features/phone-book/infrastructure/controllers/use-search-controller'
@@ -18,11 +22,12 @@ describe('PhoneBookSearch', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    resetPhoneTextEntryStore();
 
     vi.mocked(useSearchController).mockReturnValue({
       search: '',
       contacts: mockContacts,
-      handleSearch: vi.fn(),
+      setSearch: vi.fn(),
     });
   });
 
@@ -52,17 +57,20 @@ describe('PhoneBookSearch', () => {
     expect(styles.gap).toBe('8px');
   });
 
-  it('calls handleSearch when input changes', () => {
-    const mockHandleSearch = vi.fn();
+  it('calls setSearch when input changes through phone input', () => {
+    const mockSetSearch = vi.fn();
     vi.mocked(useSearchController).mockReturnValue({
       search: '',
       contacts: mockContacts,
-      handleSearch: mockHandleSearch,
+      setSearch: mockSetSearch,
     });
 
-    const { getByRole } = render(<SearchPage />);
-    const input = getByRole('textbox');
-    fireEvent.change(input, { target: { value: 'test' } });
-    expect(mockHandleSearch).toHaveBeenCalled();
+    render(<SearchPage />);
+
+    act(() => {
+      usePhoneTextEntryStore.getState().triggerNumericKey('8');
+    });
+
+    expect(mockSetSearch).toHaveBeenCalledWith('T');
   });
 });

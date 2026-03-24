@@ -4,11 +4,11 @@ import TextInput from '@/shared/ui/text-input';
 import { useSearchController } from '@/features/phone-book/infrastructure/controllers/use-search-controller';
 
 const SearchPage = () => {
-  const { contacts, handleSearch } = useSearchController();
+  const { contacts, search, setSearch } = useSearchController();
 
   return (
     <S.MainContainer>
-      <TextInput id="name" onChange={handleSearch} />
+      <TextInput id="name" value={search} onValueChange={setSearch} />
       <S.ResultsBox>
         {contacts.map((contact) => (
           <ListItem key={contact.id ?? `${contact.name}-${contact.number}`}>

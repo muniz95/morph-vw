@@ -1,7 +1,9 @@
+import { MouseEvent } from 'react';
 import S from './styled';
 import { useBottomBarNavigation } from './hooks/use-bottom-bar-navigation';
+import { PhoneNumericKey } from '@/shared/lib/phone-text-entry';
 
-const numericKeys = [
+const numericKeys: PhoneNumericKey[] = [
   '1',
   '2',
   '3',
@@ -16,6 +18,10 @@ const numericKeys = [
   '#',
 ];
 
+const preserveScreenFocus = (event: MouseEvent<HTMLButtonElement>) => {
+  event.preventDefault();
+};
+
 const BottomBar = () => {
   const {
     canConfirm,
@@ -25,6 +31,7 @@ const BottomBar = () => {
     canMoveLeft,
     canMoveRight,
     canMoveUp,
+    canUseNumericKeys,
     confirm,
     goBack,
     goHome,
@@ -33,13 +40,19 @@ const BottomBar = () => {
     moveLeft,
     moveRight,
     openMenu,
+    pressNumericKey,
   } = useBottomBarNavigation();
 
   return (
     <S.BottomBarContainer role="group" aria-label="Phone keyboard">
       <S.HardwareDeck>
         <S.SideColumn>
-          <S.ActionKey type="button" aria-label="Menu" onClick={openMenu}>
+          <S.ActionKey
+            type="button"
+            aria-label="Menu"
+            onMouseDown={preserveScreenFocus}
+            onClick={openMenu}
+          >
             Menu
           </S.ActionKey>
           <S.ActionKey type="button" $backgroundColor="#00ff00" disabled />
@@ -50,6 +63,7 @@ const BottomBar = () => {
             aria-label="Up"
             disabled={!canMoveUp}
             $area="up"
+            onMouseDown={preserveScreenFocus}
             onClick={moveUp}
           >
             ^
@@ -59,6 +73,7 @@ const BottomBar = () => {
             aria-label="Left"
             disabled={!canMoveLeft}
             $area="left"
+            onMouseDown={preserveScreenFocus}
             onClick={moveLeft}
           >
             {'<'}
@@ -69,6 +84,7 @@ const BottomBar = () => {
             disabled={!canConfirm}
             $area="center"
             $isCenter
+            onMouseDown={preserveScreenFocus}
             onClick={confirm}
           >
             OK
@@ -78,6 +94,7 @@ const BottomBar = () => {
             aria-label="Right"
             disabled={!canMoveRight}
             $area="right"
+            onMouseDown={preserveScreenFocus}
             onClick={moveRight}
           >
             {'>'}
@@ -87,6 +104,7 @@ const BottomBar = () => {
             aria-label="Down"
             disabled={!canMoveDown}
             $area="down"
+            onMouseDown={preserveScreenFocus}
             onClick={moveDown}
           >
             v
@@ -97,6 +115,7 @@ const BottomBar = () => {
             type="button"
             aria-label="Upper Right"
             disabled={!canGoBack}
+            onMouseDown={preserveScreenFocus}
             onClick={goBack}
           >
             Back
@@ -106,15 +125,22 @@ const BottomBar = () => {
             aria-label="Lower Right"
             $backgroundColor="#ff0000"
             disabled={!canGoHome}
+            onMouseDown={preserveScreenFocus}
             onClick={goHome}
           >
             Home
           </S.ActionKey>
         </S.SideColumn>
       </S.HardwareDeck>
-      <S.NumericPad aria-hidden="true">
+      <S.NumericPad>
         {numericKeys.map((key) => (
-          <S.NumericKey type="button" key={key} disabled>
+          <S.NumericKey
+            type="button"
+            key={key}
+            disabled={!canUseNumericKeys}
+            onMouseDown={preserveScreenFocus}
+            onClick={() => pressNumericKey(key)}
+          >
             {key}
           </S.NumericKey>
         ))}

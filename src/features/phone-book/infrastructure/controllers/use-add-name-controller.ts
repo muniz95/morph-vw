@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import useContactsData from '@/features/phone-book/infrastructure/hooks/use-contacts-data';
 import vibration from '@/shared/lib/vibration';
 import { usePhoneBookThirdLevel } from '@/features/phone-book/infrastructure/controllers/use-phone-book-third-level';
@@ -12,10 +12,6 @@ export const useAddNameController = () => {
   const [name, setName] = useState('');
   const openModal = useUiStore((state) => state.openModal);
   const trimmedName = useMemo(() => name.trim(), [name]);
-
-  const handleChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    setName(event.currentTarget.value);
-  }, []);
 
   const saveContact = useCallback(() => {
     if (!trimmedName) return;
@@ -41,7 +37,7 @@ export const useAddNameController = () => {
 
   return {
     name,
-    handleChange,
+    setName,
     saveContact,
   };
 };

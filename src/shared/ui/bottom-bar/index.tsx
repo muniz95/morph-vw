@@ -1,7 +1,8 @@
 import S from './styled';
 import { useBottomBarNavigation } from './hooks/use-bottom-bar-navigation';
+import { PhoneNumericKey } from '@/shared/lib/phone-text-entry';
 
-const numericKeys = [
+const numericKeys: PhoneNumericKey[] = [
   '1',
   '2',
   '3',
@@ -25,6 +26,7 @@ const BottomBar = () => {
     canMoveLeft,
     canMoveRight,
     canMoveUp,
+    canUseNumericKeys,
     confirm,
     goBack,
     goHome,
@@ -33,6 +35,7 @@ const BottomBar = () => {
     moveLeft,
     moveRight,
     openMenu,
+    pressNumericKey,
   } = useBottomBarNavigation();
 
   return (
@@ -112,9 +115,14 @@ const BottomBar = () => {
           </S.ActionKey>
         </S.SideColumn>
       </S.HardwareDeck>
-      <S.NumericPad aria-hidden="true">
+      <S.NumericPad>
         {numericKeys.map((key) => (
-          <S.NumericKey type="button" key={key} disabled>
+          <S.NumericKey
+            type="button"
+            key={key}
+            disabled={!canUseNumericKeys}
+            onClick={() => pressNumericKey(key)}
+          >
             {key}
           </S.NumericKey>
         ))}

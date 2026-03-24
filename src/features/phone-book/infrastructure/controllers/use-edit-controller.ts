@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Contact } from '@/features/phone-book/domain/contact';
 import useContactsData from '@/features/phone-book/infrastructure/hooks/use-contacts-data';
 import vibration from '@/shared/lib/vibration';
@@ -17,10 +17,6 @@ export const useEditController = () => {
   const selectContact = useCallback((contact: Contact) => {
     setCurrentContact(contact);
     setName(contact.name);
-  }, []);
-
-  const handleChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    setName(event.currentTarget.value);
   }, []);
 
   const saveContact = useCallback(() => {
@@ -44,7 +40,7 @@ export const useEditController = () => {
   return {
     contacts,
     name,
-    handleChange,
+    setName,
     saveContact,
     selectContact,
   };

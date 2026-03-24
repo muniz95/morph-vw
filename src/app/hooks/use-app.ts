@@ -4,9 +4,12 @@ import routes from '@/app/routes';
 import { useSettingsStore } from '@/features/settings/state/settings-store';
 import { useUiStore } from '@/app/state/ui-store';
 import { useInactivityBacklight } from '@/app/hooks/use-inactivity-backlight';
+import { usePhoneKeyboardInput } from '@/app/hooks/use-phone-keyboard-input';
 import { usePhoneNavigation } from '@/app/hooks/use-phone-navigation';
 
 export const useApp = () => {
+  usePhoneKeyboardInput();
+
   const { currentPath, goHome, logicalDepth } = usePhoneNavigation();
   const routing = useRoutes([...routes], currentPath);
 

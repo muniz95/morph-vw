@@ -10,12 +10,17 @@ import {
 } from '@/app/state/phone-navigation-store';
 import { resetUiStore, useUiStore } from '@/app/state/ui-store';
 import { useBottomBarNavigation } from '@/shared/ui/bottom-bar/hooks/use-bottom-bar-navigation';
+import {
+  resetPhoneTextEntryStore,
+  usePhoneTextEntryStore,
+} from '@/app/state/phone-text-entry-store';
 
 describe('useBottomBarNavigation', () => {
   beforeEach(() => {
     resetUiStore();
     resetPhoneNavigationStore();
     resetHardwareInputStore();
+    resetPhoneTextEntryStore();
   });
 
   it('resets indicator levels and returns to standby when goHome is called', () => {
@@ -74,5 +79,49 @@ describe('useBottomBarNavigation', () => {
     expect(onLeft).toHaveBeenCalledTimes(1);
     expect(onRight).toHaveBeenCalledTimes(1);
     expect(onConfirm).toHaveBeenCalledTimes(1);
+  });
+
+  it('routes numeric key actions through the active text entry', () => {
+    const onNumericKey = vi.fn();
+
+    usePhoneTextEntryStore.getState().setActiveTextEntry({
+      entryId: Symbol('name'),
+      onNumericKey,
+      onBack: () => false,
+    });
+
+    const { result } = renderHook(() => useBottomBarNavigation());
+
+    act(() => {
+      result.current.pressNumericKey('2');
+    });
+
+    expect(result.current.canUseNumericKeys).toBe(true);
+    expect(onNumericKey).toHaveBeenCalledWith('2');
+  });
+
+  it('consumes Back through text entry before navigating away', () => {
+    const onBack = vi.fn(() => true);
+    usePhoneNavigationStore.setState({
+      stack: ['/', '/menu', '/phonebook/search'],
+    });
+    usePhoneTextEntryStore.getState().setActiveTextEntry({
+      entryId: Symbol('search'),
+      onNumericKey: vi.fn(),
+      onBack,
+    });
+
+    const { result } = renderHook(() => useBottomBarNavigation());
+
+    act(() => {
+      result.current.goBack();
+    });
+
+    expect(onBack).toHaveBeenCalledTimes(1);
+    expect(usePhoneNavigationStore.getState().stack).toEqual([
+      '/',
+      '/menu',
+      '/phonebook/search',
+    ]);
   });
 });

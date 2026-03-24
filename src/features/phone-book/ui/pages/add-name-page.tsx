@@ -6,12 +6,12 @@ import { useAddNameController } from '@/features/phone-book/infrastructure/contr
 
 const AddNamePage = () => {
   const { t } = useTranslation();
-  const { handleChange, saveContact } = useAddNameController();
+  const { name, saveContact, setName } = useAddNameController();
 
   return (
     <S.MainContainer>
       <div>
-        <TextInput id="name" onChange={handleChange} />
+        <TextInput id="name" value={name} onValueChange={setName} />
       </div>
       <div>&nbsp;</div>
       <div>&nbsp;</div>

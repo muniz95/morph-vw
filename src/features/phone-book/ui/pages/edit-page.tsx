@@ -7,7 +7,7 @@ import { useEditController } from '@/features/phone-book/infrastructure/controll
 
 const EditPage = () => {
   const { t } = useTranslation();
-  const { contacts, handleChange, saveContact, selectContact } =
+  const { contacts, name, saveContact, selectContact, setName } =
     useEditController();
 
   return (
@@ -23,7 +23,7 @@ const EditPage = () => {
         ))}
       </S.ResultsBox>
       <div>
-        <TextInput id="name" onChange={handleChange} />
+        <TextInput id="name" value={name} onValueChange={setName} />
       </div>
       <div>&nbsp;</div>
       <div>&nbsp;</div>

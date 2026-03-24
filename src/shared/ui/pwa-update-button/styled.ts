@@ -3,8 +3,8 @@ import { UiButton } from '@/shared/ui/controls';
 
 const Button = styled(UiButton)`
   position: absolute;
-  top: 10px;
-  right: 12px;
+  top: 20px;
+  right: 20px;
   z-index: 1;
   min-width: auto;
   padding: 2px 7px;

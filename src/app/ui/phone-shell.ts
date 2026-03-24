@@ -21,7 +21,7 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  padding: 24px 16px 28px;
+  padding: 8px 0;
   box-sizing: border-box;
   background: radial-gradient(
     circle at center,

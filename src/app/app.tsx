@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import BatteryStatus from '@/shared/ui/battery-status';
 import BottomBar from '@/shared/ui/bottom-bar';
 import Modal from '@/shared/ui/modal';
-import PwaLedIndicator from '@/shared/ui/pwa-led-indicator';
+import LedIndicator from '@/shared/ui/led-indicator';
 import PwaUpdateButton from '@/shared/ui/pwa-update-button';
 import SignalStatus from '@/shared/ui/signal-status';
 import TopBar from '@/shared/ui/top-bar';
@@ -16,7 +16,7 @@ import S from '@/app/ui/app-shell';
 import PhoneShell from '@/app/ui/phone-shell';
 import RouteErrorBoundary from '@/app/ui/route-error-boundary';
 import { useApp } from '@/app/hooks/use-app';
-import { resolveLedIndicatorState } from '@/shared/ui/pwa-led-indicator';
+import { resolveLedIndicatorState } from '@/shared/ui/led-indicator';
 
 const App = () => {
   const { indicatorState } = usePwa();
@@ -41,7 +41,7 @@ const App = () => {
     <PhoneShell.Container>
       <GlobalStyle />
       <PhoneShell.UpperContainer data-testid="phone-shell-upper">
-        <PwaLedIndicator state={ledState} />
+        <LedIndicator state={ledState} />
         <PwaUpdateButton />
       </PhoneShell.UpperContainer>
       <PhoneShell.ScreenContainer data-testid="phone-shell-screen">

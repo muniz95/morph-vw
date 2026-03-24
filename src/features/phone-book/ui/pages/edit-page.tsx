@@ -1,4 +1,6 @@
+import { useMemo, useRef } from 'react';
 import useTranslation from '@/shared/hooks/use-translation';
+import { useVerticalHardwareFocusNavigation } from '@/shared/hooks/use-vertical-hardware-focus-navigation';
 import S from '@/shared/ui/base';
 import { UiButton } from '@/shared/ui/controls';
 import ListItem from '@/shared/ui/list-item';
@@ -7,8 +9,18 @@ import { useEditController } from '@/features/phone-book/infrastructure/controll
 
 const EditPage = () => {
   const { t } = useTranslation();
-  const { contacts, handleChange, saveContact, selectContact } =
+  const { contacts, name, saveContact, selectContact, setName } =
     useEditController();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const saveButtonRef = useRef<HTMLButtonElement>(null);
+  const focusItems = useMemo(
+    () => [{ ref: inputRef }, { ref: saveButtonRef, onConfirm: saveContact }],
+    [saveContact]
+  );
+
+  useVerticalHardwareFocusNavigation({
+    items: focusItems,
+  });
 
   return (
     <S.MainContainer>
@@ -23,13 +35,20 @@ const EditPage = () => {
         ))}
       </S.ResultsBox>
       <div>
-        <TextInput id="name" onChange={handleChange} />
+        <TextInput
+          ref={inputRef}
+          id="name"
+          value={name}
+          onValueChange={setName}
+        />
       </div>
       <div>&nbsp;</div>
       <div>&nbsp;</div>
       <div>&nbsp;</div>
       <div>
-        <UiButton onClick={saveContact}>{t('save')}</UiButton>
+        <UiButton ref={saveButtonRef} onClick={saveContact}>
+          {t('save')}
+        </UiButton>
       </div>
     </S.MainContainer>
   );

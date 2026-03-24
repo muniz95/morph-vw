@@ -1,10 +1,7 @@
 import type { PwaIndicatorState } from '@/app/lib/pwa';
 import S from './styled';
 
-export type LedIndicatorState =
-  | PwaIndicatorState
-  | 'charging'
-  | 'battery-low';
+export type LedIndicatorState = PwaIndicatorState | 'charging' | 'battery-low';
 
 type ResolveLedIndicatorStateArgs = {
   pwaIndicatorState: PwaIndicatorState;
@@ -40,11 +37,11 @@ export const resolveLedIndicatorState = ({
   return 'idle';
 };
 
-type PwaLedIndicatorProps = {
+type LedIndicatorProps = {
   state: LedIndicatorState;
 };
 
-const PwaLedIndicator = ({ state }: PwaLedIndicatorProps) => {
+const LedIndicator = ({ state }: LedIndicatorProps) => {
   if (state === 'idle') {
     return null;
   }
@@ -60,4 +57,4 @@ const PwaLedIndicator = ({ state }: PwaLedIndicatorProps) => {
   );
 };
 
-export default PwaLedIndicator;
+export default LedIndicator;

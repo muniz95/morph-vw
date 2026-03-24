@@ -1,5 +1,6 @@
 import { ReactNode, useEffect, useState } from 'react';
 import S from './styled';
+import { formatClockTime } from '@/shared/utils/date-time.util';
 
 interface TopBarProps {
   lockLabel?: string;
@@ -23,7 +24,7 @@ const TopBar = ({ lockLabel = 'Lock', pageIndicator }: TopBarProps) => {
     <S.TopBarContainer>
       <div>{lockLabel}</div>
       {pageIndicator}
-      <div>{`${date.toLocaleTimeString().slice(0, 5)}`}</div>
+      <div>{`${formatClockTime(date)}`}</div>
     </S.TopBarContainer>
   );
 };

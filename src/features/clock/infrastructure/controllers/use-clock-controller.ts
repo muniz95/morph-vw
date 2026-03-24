@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useUiStore } from '@/app/state/ui-store';
-import { formatClockTime } from '@/features/clock/domain/use-cases';
 import { useTimerController } from '@/features/clock/infrastructure/controllers/use-timer-controller';
+import { formatClockTime } from '@/shared/utils/date-time.util';
 
 export const useClockController = () => {
   const date = useTimerController();

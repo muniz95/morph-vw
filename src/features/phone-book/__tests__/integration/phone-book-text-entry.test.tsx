@@ -14,13 +14,18 @@ import {
 import { resetUiStore } from '@/app/state/ui-store';
 import {
   resetPhoneTextEntryStore,
+  usePhoneTextEntryStore,
 } from '@/app/state/phone-text-entry-store';
-import { resetContactsStore, useContactsStore } from '@/features/phone-book/state/contacts-store';
+import {
+  resetContactsStore,
+  useContactsStore,
+} from '@/features/phone-book/state/contacts-store';
 import {
   resetSettingsStore,
   SETTINGS_STORAGE_KEY,
 } from '@/features/settings/state/settings-store';
 import { resetIndexedDbCache } from '@/shared/hooks/use-indexed-db';
+import { useUiStore } from '@/app/state/ui-store';
 
 const flushLazyRoute = async () => {
   await act(async () => {
@@ -85,6 +90,27 @@ describe('phone-book text entry integration', () => {
     expect(input.value).toBe('AD');
   });
 
+  it('keeps numeric input active when clicking the keypad buttons', async () => {
+    usePhoneNavigationStore.setState({
+      stack: ['/', '/menu', '/phonebook', '/phonebook/addname'],
+    });
+
+    await renderPhoneApp();
+
+    const keyboard = screen.getByTestId('phone-shell-keyboard');
+    const input = screen.getByRole('textbox') as HTMLInputElement;
+    const numericTwoButton = within(keyboard).getByRole('button', { name: '2' });
+
+    expect(document.activeElement).toBe(input);
+
+    fireEvent.mouseDown(numericTwoButton);
+    fireEvent.click(numericTwoButton);
+
+    expect(input.value).toBe('A');
+    expect(document.activeElement).toBe(input);
+    expect(usePhoneTextEntryStore.getState().activeTextEntry).not.toBeNull();
+  });
+
   it('filters search results through multi-tap numeric input', async () => {
     useContactsStore.setState({
       hydrated: true,
@@ -133,5 +159,32 @@ describe('phone-book text entry integration', () => {
       '/menu',
       '/phonebook',
     ]);
+  });
+
+  it('moves focus from the text input to Save and confirms the action', async () => {
+    usePhoneNavigationStore.setState({
+      stack: ['/', '/menu', '/phonebook', '/phonebook/addname'],
+    });
+
+    await renderPhoneApp();
+
+    act(() => {
+      usePhoneTextEntryStore.getState().triggerNumericKey('2');
+    });
+
+    const saveButton = screen.getByText('save');
+
+    act(() => {
+      useHardwareInputStore.getState().triggerDown();
+    });
+
+    expect(document.activeElement).toBe(saveButton);
+    expect(usePhoneTextEntryStore.getState().activeTextEntry).toBeNull();
+
+    act(() => {
+      useHardwareInputStore.getState().triggerConfirm();
+    });
+
+    expect(useUiStore.getState().showModal).toBe(true);
   });
 });

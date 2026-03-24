@@ -67,4 +67,28 @@ describe('phone text input', () => {
 
     expect(input.value).toBe('');
   });
+
+  it('commits pending text and deactivates text entry on blur', () => {
+    const { getByRole } = render(
+      <>
+        <TextInputHarness />
+        <button type="button">Next</button>
+      </>
+    );
+    const input = getByRole('textbox') as HTMLInputElement;
+    const button = getByRole('button', { name: 'Next' });
+
+    act(() => {
+      usePhoneTextEntryStore.getState().triggerNumericKey('2');
+    });
+
+    expect(input.value).toBe('A');
+
+    act(() => {
+      button.focus();
+    });
+
+    expect(input.value).toBe('A');
+    expect(usePhoneTextEntryStore.getState().activeTextEntry).toBeNull();
+  });
 });

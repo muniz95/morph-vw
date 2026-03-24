@@ -99,7 +99,9 @@ describe('phone-book text entry integration', () => {
 
     const keyboard = screen.getByTestId('phone-shell-keyboard');
     const input = screen.getByRole('textbox') as HTMLInputElement;
-    const numericTwoButton = within(keyboard).getByRole('button', { name: '2' });
+    const numericTwoButton = within(keyboard).getByRole('button', {
+      name: '2',
+    });
 
     expect(document.activeElement).toBe(input);
 

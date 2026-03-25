@@ -1,4 +1,4 @@
-import { useTimerController } from '@/features/clock/infrastructure/controllers/use-timer-controller';
+import { useTimerController } from '@/shared/hooks/use-timer';
 import { renderHook, act } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 

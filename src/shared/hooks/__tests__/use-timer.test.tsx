@@ -1,4 +1,4 @@
-import { useTimerController } from '@/shared/hooks/use-timer';
+import { useTimer } from '@/shared/hooks/use-timer';
 import { renderHook, act } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -6,7 +6,7 @@ vi.useFakeTimers();
 
 describe('useTimer', () => {
   it('should update the date every second', () => {
-    const { result } = renderHook(() => useTimerController());
+    const { result } = renderHook(() => useTimer());
 
     const initialDate = result.current;
     act(() => {

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, fireEvent, render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import '@/app/providers/i18n';
@@ -27,6 +27,8 @@ import {
 import { DEFAULT_SETTINGS } from '@/features/settings/domain/constants';
 
 describe('settings module integration', () => {
+  let scrollIntoViewTargets: string[];
+
   beforeEach(() => {
     const storage = globalThis.localStorage as Partial<Storage>;
     if (typeof storage?.removeItem === 'function') {
@@ -36,6 +38,14 @@ describe('settings module integration', () => {
     resetUiStore();
     resetPhoneNavigationStore();
     resetHardwareInputStore();
+    scrollIntoViewTargets = [];
+
+    Object.defineProperty(HTMLElement.prototype, 'scrollIntoView', {
+      configurable: true,
+      value: vi.fn(function (this: HTMLElement) {
+        scrollIntoViewTargets.push(this.textContent ?? '');
+      }),
+    });
   });
 
   it('exposes all expected routes', () => {
@@ -165,6 +175,26 @@ describe('settings module integration', () => {
 
     expect(useSettingsStore.getState().backlightLevel).toBe(30);
     expect(useSettingsStore.getState().inactivityTime).toBe(120);
+  });
+
+  it('scrolls the selected language into view during hardware navigation', () => {
+    render(
+      <MemoryRouter initialEntries={['/settings/general/language']}>
+        <LanguageSettingsPage />
+      </MemoryRouter>
+    );
+
+    act(() => {
+      useHardwareInputStore.getState().triggerDown();
+      useHardwareInputStore.getState().triggerDown();
+      useHardwareInputStore.getState().triggerDown();
+      useHardwareInputStore.getState().triggerDown();
+    });
+
+    expect(scrollIntoViewTargets.at(-1)).toContain('Italiano');
+    expect(HTMLElement.prototype.scrollIntoView).toHaveBeenLastCalledWith({
+      block: 'nearest',
+    });
   });
 
   it('saves updated values through store-backed pages', () => {

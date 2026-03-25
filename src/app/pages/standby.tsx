@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import HomeScreen from '@/shared/ui/home-screen';
-import { useTimerController } from '@/features/clock/infrastructure/controllers/use-timer-controller';
+import { useTimer } from '@/shared/hooks/use-timer';
 import { useSettingsStore } from '@/features/settings/state/settings-store';
 import { formatClockTime, formatDateTime } from '@/shared/utils/date-time.util';
 
@@ -32,7 +32,7 @@ const resolveLocale = (language: string) =>
   language === 'pt' ? 'pt-BR' : 'en-US';
 
 const StandbyPage = () => {
-  const date = useTimerController();
+  const date = useTimer();
   const language = useSettingsStore((state) => state.language);
   const locale = resolveLocale(language);
 

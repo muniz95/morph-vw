@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-export const useTimerController = () => {
+export const useTimer = () => {
   const [date, setDate] = useState(new Date());
   const timerId = useRef<NodeJS.Timeout | null>(null);
 

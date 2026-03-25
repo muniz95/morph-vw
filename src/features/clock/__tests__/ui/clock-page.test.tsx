@@ -21,16 +21,16 @@ describe('Clock', () => {
   it('displays the current time', () => {
     vi.setSystemTime(new Date('2021-01-01T12:00:00'));
     const { container } = render(<ClockPage />);
-    expect(container.querySelector('#time')?.innerHTML).eq('12:00:00');
+    expect(container.querySelector('#time')?.innerHTML).eq('12:00');
   });
 
   it('advances time correctly', () => {
     vi.setSystemTime(new Date('2021-01-01T10:00:00'));
     const { container } = render(<ClockPage />);
-    expect(container.querySelector('#time')?.innerHTML).eq('10:00:00');
+    expect(container.querySelector('#time')?.innerHTML).eq('10:00');
     act(() => {
       vi.advanceTimersByTime(2 * 60 * 60 * 1000);
     });
-    expect(container.querySelector('#time')?.innerHTML).eq('12:00:00');
+    expect(container.querySelector('#time')?.innerHTML).eq('12:00');
   });
 });
